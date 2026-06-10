@@ -37,3 +37,14 @@ $env:OPENAI_API_KEY="your-api-key"
 ```bash
 export OPENAI_API_KEY="your-api-key"
 ```
+
+---
+
+### 🔑 Default Test Accounts
+When the backend starts, it automatically seeds the in-memory database with the following test accounts:
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Student** | `omar.student@fahmak.com` | `password123` |
+| **Instructor** | `ahmed.instructor@fahmak.com` | `password123` |
+| **Admin** | `admin@fahmak.com` | `password123` |

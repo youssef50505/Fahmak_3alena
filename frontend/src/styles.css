@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Accessibility: High Contrast Mode */
+body.high-contrast {
+  background-color: #000000 !important;
+  color: #FFFF00 !important;
+}
+
+body.high-contrast * {
+  background-color: #000000 !important;
+  color: #FFFF00 !important;
+  border-color: #FFFF00 !important;
+}
+
+body.high-contrast svg {
+  color: #FFFF00 !important;
+  stroke: #FFFF00 !important;
+}
+
+/* Accessibility: Reduced Motion */
+body.reduced-motion * {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Accessibility: Color Blindness Filter */
+/* Standard filter simulating a correction for Protanopia/Deuteranopia */
+body.color-blind-filter {
+  filter: contrast(1.2) saturate(1.5) sepia(0.3) hue-rotate(-10deg) !important;
+}

@@ -1,0 +1,98 @@
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { Subscription } from 'rxjs';
+import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
+
+@Component({
+  selector: 'app-tutoring-room',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './tutoring-room.component.html'
+})
+export class TutoringRoomComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('zegoContainer', { static: false }) zegoContainer!: ElementRef;
+
+  private readonly APP_ID = 52259796;
+  private readonly SERVER_SECRET = '0bdbadc00eaebeb3afaab431275e019c';
+
+  roomID: string = 'global-room';
+  userID: string = '';
+  userName: string = 'Student';
+
+  private zegoInstance: any = null;
+  private authSub?: Subscription;
+  private routeSub?: Subscription;
+
+  constructor(
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    this.routeSub = this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.roomID = params['id'];
+      }
+    });
+
+    this.authSub = this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        const u: any = user.user || user;
+        this.userID = String(u.id || user.userId || this.generateUserID());
+        this.userName = `${u.firstName} ${u.lastName}`;
+      } else {
+        this.userID = this.generateUserID();
+        this.userName = 'Guest';
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.joinRoom();
+  }
+
+  ngOnDestroy() {
+    if (this.zegoInstance) {
+      this.zegoInstance.destroy();
+    }
+    this.authSub?.unsubscribe();
+    this.routeSub?.unsubscribe();
+  }
+
+  private joinRoom(): void {
+    if (!this.zegoContainer) return;
+
+    try {
+      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        this.APP_ID,
+        this.SERVER_SECRET,
+        this.roomID,
+        this.userID,
+        this.userName
+      );
+
+      this.zegoInstance = ZegoUIKitPrebuilt.create(kitToken);
+
+      this.zegoInstance.joinRoom({
+        container: this.zegoContainer.nativeElement,
+        scenario: {
+          mode: ZegoUIKitPrebuilt.VideoConference
+        },
+        showPreJoinView: true,
+        turnOnMicrophoneWhenJoining: false,
+        turnOnCameraWhenJoining: true,
+        showRoomTimer: true,
+        showUserList: true,
+        showTextChat: true
+      });
+    } catch (err) {
+      console.error('[ZegoCloud] Failed to initialize tutoring room:', err);
+    }
+  }
+
+  private generateUserID(): string {
+    return 'user_' + Math.random().toString(36).substring(2, 10);
+  }
+}

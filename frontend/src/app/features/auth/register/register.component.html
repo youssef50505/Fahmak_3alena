@@ -1,141 +1,188 @@
-<div class="min-h-screen bg-surface-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="flex justify-center text-brand-1000 font-bold text-3xl items-center gap-2">
-      <img src="assets/NTG Logo Digital Transformation.png" alt="NTG Logo" class="h-10 w-auto mr-2">
-      <span>Fahmak <span class="text-brand-500">Alena</span></span>
-    </div>
-    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-      Create your 
-      <span *ngIf="activeModule === 'STUDENT'" class="text-brand-600">Student</span>
-      <span *ngIf="activeModule === 'INSTRUCTOR'" class="text-brand-600">Instructor</span>
-      <span *ngIf="activeModule === 'ADMIN'" class="text-red-600">Admin</span>
-      account
-    </h2>
-    <p class="mt-2 text-center text-sm text-gray-600">
-      Already have an account?
-      <a routerLink="/login" class="font-medium text-brand-600 hover:text-brand-500 transition-colors">
-        Sign in here
-      </a>
-    </p>
-  </div>
+<div class="auth-container w-full h-screen flex flex-col lg:flex-row-reverse font-sans">
 
-  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+  <!-- Right: Auth Form Side -->
+  <div class="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 lg:px-24 xl:px-32 relative z-20 h-full pt-4 pb-4">
     
-    <!-- Portal Selection Tabs -->
-    <div class="bg-gray-100 p-1.5 rounded-xl mb-6 flex space-x-1 shadow-inner border border-gray-200">
-      <button type="button" 
-              (click)="setModule('STUDENT')"
-              [ngClass]="activeModule === 'STUDENT' ? 'bg-white text-brand-700 shadow border-gray-200 font-bold' : 'text-gray-600 hover:text-gray-900 font-medium'"
-              class="flex-1 py-2.5 text-sm rounded-lg transition-all border border-transparent">
-        Student
-      </button>
-      <button type="button" 
-              (click)="setModule('INSTRUCTOR')"
-              [ngClass]="activeModule === 'INSTRUCTOR' ? 'bg-white text-brand-700 shadow border-gray-200 font-bold' : 'text-gray-600 hover:text-gray-900 font-medium'"
-              class="flex-1 py-2.5 text-sm rounded-lg transition-all border border-transparent">
-        Instructor
-      </button>
-      <button type="button" 
-              (click)="setModule('ADMIN')"
-              [ngClass]="activeModule === 'ADMIN' ? 'bg-white text-red-700 shadow border-gray-200 font-bold' : 'text-gray-600 hover:text-gray-900 font-medium'"
-              class="flex-1 py-2.5 text-sm rounded-lg transition-all border border-transparent">
-        Admin
-      </button>
+    <!-- Header / Logo -->
+    <div class="flex items-center gap-3 mb-4 auth-stagger">
+      <img src="assets/NTG Logo Digital Transformation.png" alt="NTG Logo" class="h-10 w-auto">
+      <span class="text-brand-1000 font-extrabold text-3xl tracking-tight">Fahmak <span class="text-brand-600">Alena</span></span>
     </div>
 
-    <div class="bg-white py-8 px-4 shadow-soft sm:rounded-2xl sm:px-10 border border-gray-100">
-      <form class="space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <!-- Title -->
+    <div class="auth-stagger mb-6">
+      <h2 class="text-3xl font-black text-gray-900 tracking-tight mb-1">
+        Create an account.
+      </h2>
+      <p class="text-gray-500 text-base">
+        Join the <span class="font-bold text-gray-800">{{ activeModule | titlecase }}</span> portal today, or 
+        <a routerLink="/login" class="text-brand-600 font-bold hover:text-brand-700 transition-colors">sign in here</a>.
+      </p>
+    </div>
+
+    <!-- Main Glass Form Container -->
+    <div class="glass-panel rounded-[2rem] p-6 auth-stagger relative max-w-md mx-auto w-full lg:mx-0 lg:max-w-none">
+      
+      <!-- Portal Selection Tabs -->
+      <div class="bg-gray-100/50 p-1 rounded-xl mb-4 flex space-x-1 shadow-inner border border-white/50 relative z-10 backdrop-blur-md">
+        <button type="button" 
+                (click)="setModule('STUDENT')"
+                [ngClass]="activeModule === 'STUDENT' ? 'bg-white text-brand-700 shadow-sm border-white font-bold' : 'text-gray-500 hover:text-gray-800 font-medium'"
+                class="flex-1 py-2.5 text-sm rounded-lg transition-all border border-transparent">
+          Student
+        </button>
+        <button type="button" 
+                (click)="setModule('INSTRUCTOR')"
+                [ngClass]="activeModule === 'INSTRUCTOR' ? 'bg-white text-brand-700 shadow-sm border-white font-bold' : 'text-gray-500 hover:text-gray-800 font-medium'"
+                class="flex-1 py-2.5 text-sm rounded-lg transition-all border border-transparent">
+          Instructor
+        </button>
+        <button type="button" 
+                (click)="setModule('ADMIN')"
+                [ngClass]="activeModule === 'ADMIN' ? 'bg-white text-red-700 shadow-sm border-white font-bold' : 'text-gray-500 hover:text-gray-800 font-medium'"
+                class="flex-1 py-2.5 text-sm rounded-lg transition-all border border-transparent">
+          Admin
+        </button>
+      </div>
+
+      <form class="space-y-3 relative z-10" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
-            <div class="mt-1">
-              <input id="firstName" formControlName="firstName" type="text" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" placeholder="Youssef">
-            </div>
-            <p *ngIf="registerForm.get('firstName')?.touched && registerForm.get('firstName')?.hasError('required')" class="mt-1 text-xs text-red-500">First name is required</p>
+            <label for="firstName" class="block text-xs font-bold text-gray-700 mb-1">First Name</label>
+            <input id="firstName" formControlName="firstName" type="text" placeholder="Youssef"
+                   class="premium-input block w-full px-3 py-2 rounded-lg text-sm text-gray-900 focus:outline-none placeholder-gray-400">
+            <p *ngIf="registerForm.get('firstName')?.touched && registerForm.get('firstName')?.hasError('required')" class="mt-0.5 text-xs text-red-500 font-medium">Required</p>
           </div>
           <div>
-            <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
-            <div class="mt-1">
-              <input id="lastName" formControlName="lastName" type="text" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" placeholder="Hassan">
-            </div>
-            <p *ngIf="registerForm.get('lastName')?.touched && registerForm.get('lastName')?.hasError('required')" class="mt-1 text-xs text-red-500">Last name is required</p>
+            <label for="lastName" class="block text-xs font-bold text-gray-700 mb-1">Last Name</label>
+            <input id="lastName" formControlName="lastName" type="text" placeholder="Hassan"
+                   class="premium-input block w-full px-3 py-2 rounded-lg text-sm text-gray-900 focus:outline-none placeholder-gray-400">
+            <p *ngIf="registerForm.get('lastName')?.touched && registerForm.get('lastName')?.hasError('required')" class="mt-0.5 text-xs text-red-500 font-medium">Required</p>
           </div>
         </div>
 
-        <!-- Removed role dropdown, role is handled via tabs -->
-
         <div>
-          <label for="reg-email" class="block text-sm font-medium text-gray-700">
-            Email address
-          </label>
-          <div class="mt-1">
-            <input id="reg-email" formControlName="email" type="email" autocomplete="email" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" placeholder="you@example.com">
-          </div>
-          <p *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required')" class="mt-1 text-xs text-red-500">Email is required</p>
-          <p *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')" class="mt-1 text-xs text-red-500">Please enter a valid email</p>
+          <label for="reg-email" class="block text-xs font-bold text-gray-700 mb-1">Email address</label>
+          <input id="reg-email" formControlName="email" type="email" autocomplete="email" placeholder="you@example.com"
+                 class="premium-input block w-full px-3 py-2 rounded-lg text-sm text-gray-900 focus:outline-none placeholder-gray-400">
+          <p *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required')" class="mt-0.5 text-xs text-red-500 font-medium">Required</p>
+          <p *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')" class="mt-0.5 text-xs text-red-500 font-medium">Invalid email</p>
         </div>
 
         <div>
-          <label for="reg-password" class="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <div class="mt-1">
-            <input id="reg-password" formControlName="password" type="password" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" placeholder="At least 8 characters">
-          </div>
-          <p *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')" class="mt-1 text-xs text-red-500">Password is required</p>
-          <p *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')" class="mt-1 text-xs text-red-500">Password must be at least 8 characters</p>
-          <p *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('pattern')" class="mt-1 text-xs text-red-500">Password must contain at least 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character.</p>
-          <p *ngIf="!registerForm.get('password')?.touched || (!registerForm.get('password')?.hasError('required') && !registerForm.get('password')?.hasError('minlength') && !registerForm.get('password')?.hasError('pattern'))" class="mt-2 text-xs text-gray-500">Must be at least 8 characters long.</p>
+          <label for="reg-password" class="block text-xs font-bold text-gray-700 mb-1">Password</label>
+          <input id="reg-password" formControlName="password" type="password" placeholder="At least 8 characters"
+                 class="premium-input block w-full px-3 py-2 rounded-lg text-sm text-gray-900 focus:outline-none placeholder-gray-400">
+          <p *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')" class="mt-0.5 text-xs text-red-500 font-medium">Required</p>
+          <p *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')" class="mt-0.5 text-xs text-red-500 font-medium">Min 8 chars</p>
         </div>
 
-        <div>
-          <div class="flex items-center">
-            <input id="agree-terms" formControlName="agreeTerms" type="checkbox" class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded">
-            <label for="agree-terms" class="ml-2 block text-sm text-gray-900">
-              I agree to the <a href="#" class="text-brand-600 hover:underline">Terms of Service</a> and <a href="#" class="text-brand-600 hover:underline">Privacy Policy</a>
+        <div class="pt-1">
+          <div class="flex items-center gap-2">
+            <input id="agree-terms" formControlName="agreeTerms" type="checkbox" class="w-3.5 h-3.5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded cursor-pointer">
+            <label for="agree-terms" class="block text-xs font-medium text-gray-600 cursor-pointer">
+              I agree to the <a href="#" class="text-brand-600 hover:text-brand-700 font-bold">Terms</a> & <a href="#" class="text-brand-600 hover:text-brand-700 font-bold">Privacy</a>
             </label>
           </div>
-          <p *ngIf="registerForm.get('agreeTerms')?.touched && registerForm.get('agreeTerms')?.hasError('required')" class="mt-1 text-xs text-red-500">You must agree to the terms and conditions</p>
+          <p *ngIf="registerForm.get('agreeTerms')?.touched && registerForm.get('agreeTerms')?.hasError('required')" class="mt-0.5 text-xs text-red-500 font-medium">You must agree</p>
         </div>
 
-        <div *ngIf="error" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+        <div *ngIf="error" class="text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100 font-medium flex items-center gap-2">
+          <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
           {{ error }}
         </div>
 
-        <div>
-          <button type="submit" [disabled]="registerForm.invalid || isLoading" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors disabled:opacity-50">
-            <span *ngIf="isLoading">Creating account...</span>
-            <span *ngIf="!isLoading">Create Account</span>
-          </button>
-        </div>
+        <button type="submit" [disabled]="registerForm.invalid || isLoading" 
+                class="w-full flex justify-center items-center gap-2 py-2.5 px-4 rounded-xl shadow-lg shadow-brand-500/30 text-white font-bold text-base bg-gradient-to-r from-brand-600 to-brand-500 hover:to-brand-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all disabled:opacity-50 hover:-translate-y-0.5 mt-1">
+          <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <span *ngIf="!isLoading">Create Account</span>
+        </button>
       </form>
 
-      <div class="mt-6">
-        <div class="relative">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">
-              Or sign up with
-            </span>
-          </div>
+      <div class="mt-6 relative z-10">
+        <div class="relative flex justify-center text-sm">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+          <span class="px-4 bg-white text-gray-400 font-medium rounded-full relative">Or sign up with</span>
         </div>
 
-        <div class="mt-6 grid grid-cols-2 gap-3">
-          <div id="google-btn-register" class="flex justify-center w-full"></div>
-
-          <div>
-            <button type="button" (click)="handleFacebookLogin()" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
-              <span class="sr-only">Sign up with Facebook</span>
-              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clip-rule="evenodd" />
-              </svg>
-            </button>
+        <div class="mt-4 flex justify-center gap-4 relative">
+          <!-- Fallback Google SVG and Google iframe container -->
+          <div class="relative w-10 h-10 flex justify-center items-center border border-[#dadce0] rounded-full shadow-sm bg-white hover:bg-gray-50 transition-colors">
+            <!-- The actual Google iframe will be injected inside #google-btn-register -->
+            <div id="google-btn-register" class="absolute inset-0 z-10 w-full h-full flex justify-center items-center"></div>
+            <!-- Fallback SVG that is always visible if iframe is transparent or fails -->
+            <svg class="w-5 h-5 z-0" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              <path fill="none" d="M0 0h48v48H0z"/>
+            </svg>
           </div>
+          
+          <button type="button" (click)="handleFacebookLogin()" class="flex justify-center items-center w-10 h-10 border border-[#dadce0] rounded-full shadow-sm bg-white hover:bg-gray-50 transition-colors">
+            <svg class="w-5 h-5 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Left: 3D Animated Graphic Side -->
+  <div class="hidden lg:flex w-1/2 relative bg-brand-50 overflow-hidden items-center justify-center perspective-1000 border-r border-gray-200/50">
+    <!-- Glowing Blobs -->
+    <div class="absolute w-[500px] h-[500px] bg-brand-300 rounded-full glow-blob top-1/3 -left-20 animate-pulse"></div>
+    <div class="absolute w-[400px] h-[400px] bg-brand-200 rounded-full glow-blob bottom-20 right-10 animate-pulse" style="animation-delay: 2s;"></div>
+    
+    <!-- 3D Graphic Composition -->
+    <div class="relative w-full h-full max-w-lg flex items-center justify-center z-20 3d-graphic" style="transform-style: preserve-3d; perspective: 1200px;">
+        
+        <!-- Welcome Card (Back Right) -->
+        <div class="absolute w-72 h-80 glass-panel-dark rounded-[2.5rem] p-8 flex flex-col justify-between animate-float-medium transition-all duration-700 cursor-pointer" style="transform: translate(100px, -60px) translateZ(-100px) rotateY(-15deg) rotate(5deg);">
+          <div>
+             <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6 border border-white/20">
+               <svg class="w-6 h-6 text-brand-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+             </div>
+             <h3 class="text-2xl font-bold text-white mb-2">Fast Setup</h3>
+             <p class="text-gray-400 text-sm">Get started in seconds. No credit card required.</p>
+          </div>
+          <div class="flex -space-x-4">
+             <img class="w-10 h-10 rounded-full border-2 border-gray-900" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User">
+             <img class="w-10 h-10 rounded-full border-2 border-gray-900" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="User">
+             <img class="w-10 h-10 rounded-full border-2 border-gray-900" src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="User">
+             <div class="w-10 h-10 rounded-full border-2 border-gray-900 bg-gray-800 flex items-center justify-center text-xs text-white font-bold">+2k</div>
+          </div>
+        </div>
+
+        <!-- Progress Card (Front Left) -->
+        <div class="absolute w-80 h-72 glass-panel rounded-[2.5rem] p-8 flex flex-col justify-between animate-float-fast z-20 transition-all duration-700 cursor-pointer" style="transform: translate(-80px, 80px) translateZ(80px) rotateY(10deg) rotate(-5deg);">
+          <div>
+            <h4 class="text-gray-900 font-extrabold text-xl mb-4">Community</h4>
+            <!-- Curved SVG Chart -->
+            <div class="w-full h-24 relative flex items-end">
+                <svg viewBox="0 0 100 40" class="w-full h-full overflow-visible drop-shadow-[0_5px_10px_rgba(202,42,34,0.3)]">
+                  <path class="chart-line" d="M0,40 Q25,30 50,20 T100,5" fill="none" stroke="url(#regGrad)" stroke-width="4" stroke-linecap="round"></path>
+                  <defs>
+                      <linearGradient id="regGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#ff6b6b" />
+                        <stop offset="100%" stop-color="#ca2a22" />
+                      </linearGradient>
+                  </defs>
+                </svg>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 bg-brand-50 p-4 rounded-2xl border border-brand-100">
+             <div class="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/50">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+             </div>
+             <div>
+               <div class="text-brand-900 font-bold">Growing Daily</div>
+               <div class="text-brand-600 text-xs">Join the movement</div>
+             </div>
+          </div>
+        </div>
+
     </div>
   </div>
 </div>

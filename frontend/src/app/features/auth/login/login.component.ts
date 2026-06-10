@@ -1,14 +1,15 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { OAuthHelper } from '../../../core/services/oauth.helper';
+import gsap from 'gsap';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TitleCasePipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -32,6 +33,18 @@ export class LoginComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // GSAP Entrance Animations
+    gsap.fromTo('.auth-stagger', 
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' }
+    );
+
+    gsap.fromTo('.3d-graphic',
+      { opacity: 0, scale: 0.9, x: 50 },
+      { opacity: 1, scale: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.3 }
+    );
+
+    // OAuth Init
     this.oauthHelper.initializeGoogleSignIn('YOUR_GOOGLE_CLIENT_ID', (response) => {
       this.handleGoogleLogin(response.credential);
     });

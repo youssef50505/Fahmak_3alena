@@ -1,14 +1,15 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { OAuthHelper } from '../../../core/services/oauth.helper';
+import gsap from 'gsap';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TitleCasePipe],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -22,7 +23,8 @@ export class RegisterComponent implements AfterViewInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private oauthHelper: OAuthHelper,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.registerForm = this.fb.group({
       firstName: ['', [Validators.required]],
@@ -31,7 +33,7 @@ export class RegisterComponent implements AfterViewInit {
       password: ['', [
         Validators.required, 
         Validators.minLength(8),
-        Validators.pattern(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!_]).{8,}$/)
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
       ]],
       role: ['STUDENT', [Validators.required]],
       agreeTerms: [false, [Validators.requiredTrue]]
@@ -39,6 +41,18 @@ export class RegisterComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // GSAP Entrance Animations
+    gsap.fromTo('.auth-stagger', 
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' }
+    );
+
+    gsap.fromTo('.3d-graphic',
+      { opacity: 0, scale: 0.9, x: -50 },
+      { opacity: 1, scale: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.3 }
+    );
+
+    // OAuth Init
     this.oauthHelper.initializeGoogleSignIn('YOUR_GOOGLE_CLIENT_ID', (response) => {
       this.handleGoogleLogin(response.credential);
     });

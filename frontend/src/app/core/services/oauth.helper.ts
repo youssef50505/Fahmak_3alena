@@ -8,24 +8,40 @@ declare var google: any;
 export class OAuthHelper {
   constructor(private ngZone: NgZone) {}
 
+  private isGoogleInitialized = false;
+
   initializeGoogleSignIn(clientId: string, callback: (response: any) => void) {
-    if (typeof google !== 'undefined') {
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: (res: any) => {
-          this.ngZone.run(() => callback(res));
+    const checkGoogle = setInterval(() => {
+      if (typeof google !== 'undefined') {
+        clearInterval(checkGoogle);
+        if (!this.isGoogleInitialized) {
+          google.accounts.id.initialize({
+            client_id: clientId,
+            callback: (res: any) => {
+              this.ngZone.run(() => callback(res));
+            }
+          });
+          this.isGoogleInitialized = true;
         }
-      });
-    }
+      }
+    }, 100);
   }
 
-  renderGoogleButton(elementId: string) {
-    if (typeof google !== 'undefined') {
-      google.accounts.id.renderButton(
-        document.getElementById(elementId),
-        { theme: 'outline', size: 'large', type: 'standard', width: '100%' }
-      );
-    }
+  renderGoogleButton(elementId: string, type: 'standard' | 'icon' = 'icon') {
+    const checkGoogle = setInterval(() => {
+      if (typeof google !== 'undefined' && this.isGoogleInitialized) {
+        clearInterval(checkGoogle);
+        const el = document.getElementById(elementId);
+        if (el) {
+          google.accounts.id.renderButton(el, { 
+            theme: 'outline', 
+            size: 'large', 
+            type: type, 
+            shape: 'circle' 
+          });
+        }
+      }
+    }, 100);
   }
 
   initializeFacebookSignIn(appId: string) {

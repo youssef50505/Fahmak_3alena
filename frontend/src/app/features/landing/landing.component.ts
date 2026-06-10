@@ -1,30 +1,56 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import '@splinetool/viewer';
+
+gsap.registerPlugin(ScrollTrigger);
 
 @Component({
   selector: 'app-landing',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './landing.component.html',
-  styles: []
+  styleUrls: ['./landing.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class LandingComponent {
-  features = [
-    {
-      title: 'Adaptive Learning',
-      description: 'AI-driven paths tailored perfectly to your unique pace and learning style.',
-      icon: '🧠'
-    },
-    {
-      title: 'Virtual Classrooms',
-      description: 'Immersive and interactive environments bridging the gap between remote and reality.',
-      icon: '🌐'
-    },
-    {
-      title: 'Gamified Experience',
-      description: 'Earn points, unlock badges, and compete on leaderboards as you master new skills.',
-      icon: '🏆'
-    }
-  ];
+export class LandingComponent implements AfterViewInit {
+
+  ngAfterViewInit() {
+    // Hero Animations
+    gsap.fromTo('.hero-content > *',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out', delay: 0.2 }
+    );
+
+    gsap.fromTo('.hero-graphic',
+      { opacity: 0, scale: 0.9, x: 50 },
+      { opacity: 1, scale: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.5 }
+    );
+
+    // Scroll Animations for Bento Grid
+    gsap.fromTo('.section-title',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#features',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    gsap.fromTo('.bento-card',
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.bento-card',
+          start: 'top 85%',
+        }
+      }
+    );
+  }
 }

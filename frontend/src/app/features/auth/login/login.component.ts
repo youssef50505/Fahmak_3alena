@@ -36,26 +36,41 @@ export class LoginComponent implements AfterViewInit {
       this.handleGoogleLogin(response.credential);
     });
     this.oauthHelper.renderGoogleButton('google-btn-login');
+    this.oauthHelper.initializeFacebookSignIn('YOUR_FACEBOOK_APP_ID');
   }
 
   handleGoogleLogin(token: string) {
     this.isLoading = true;
     this.error = '';
-    this.authService.loginWithGoogle(token).subscribe({
+    this.authService.loginWithGoogle(token, this.activeModule).subscribe({
       next: (response) => {
         this.isLoading = false;
-        const role = response.user?.role || response.role;
-        if (role === 'INSTRUCTOR') {
-          this.router.navigate(['/instructor']);
-        } else if (role === 'ADMIN') {
-          this.router.navigate(['/admin']);
-        } else {
-          this.router.navigate(['/dashboard']);
-        }
+        this.redirectBasedOnRole(response.user?.role || response.role);
       },
       error: (err) => {
         this.error = err.error?.error || 'Google login failed';
         this.isLoading = false;
+      }
+    });
+  }
+
+  handleFacebookLogin() {
+    this.oauthHelper.loginWithFacebook((response) => {
+      if (response && response.authResponse) {
+        this.isLoading = true;
+        this.error = '';
+        this.authService.loginWithFacebook(response.authResponse.accessToken, this.activeModule).subscribe({
+          next: (res) => {
+            this.isLoading = false;
+            this.redirectBasedOnRole(res.user?.role || res.role);
+          },
+          error: (err) => {
+            this.error = err.error?.error || 'Facebook login failed';
+            this.isLoading = false;
+          }
+        });
+      } else {
+        this.error = 'Facebook login was cancelled or failed';
       }
     });
   }
@@ -72,14 +87,7 @@ export class LoginComponent implements AfterViewInit {
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
           this.isLoading = false;
-          const role = response.user?.role || response.role;
-          if (role === 'INSTRUCTOR') {
-            this.router.navigate(['/instructor']);
-          } else if (role === 'ADMIN') {
-            this.router.navigate(['/admin']);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
+          this.redirectBasedOnRole(response.user?.role || response.role);
         },
         error: (err) => {
           if (err.status === 0) {
@@ -90,6 +98,22 @@ export class LoginComponent implements AfterViewInit {
           this.isLoading = false;
         }
       });
+    }
+  }
+
+  private redirectBasedOnRole(role: string) {
+    if (role !== this.activeModule) {
+      this.error = `This account belongs to a ${role.toLowerCase()}. Please select the correct portal to login.`;
+      this.authService.logout(); // log them out since they are in the wrong portal
+      return;
+    }
+    
+    if (role === 'INSTRUCTOR') {
+      this.router.navigate(['/instructor']);
+    } else if (role === 'ADMIN') {
+      this.router.navigate(['/admin']);
+    } else {
+      this.router.navigate(['/dashboard']);
     }
   }
 }

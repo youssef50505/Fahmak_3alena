@@ -18,7 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
 
 @Slf4j
 @Service
@@ -32,7 +35,7 @@ public class OAuthService {
     private String googleClientId;
 
     @Transactional
-    public AuthResponse authenticateWithGoogle(String idToken) {
+    public AuthResponse authenticateWithGoogle(String idToken, Role requestedRole) {
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
                     .setAudience(Collections.singletonList(googleClientId))
@@ -50,7 +53,7 @@ public class OAuthService {
             String lastName = (String) payload.get("family_name");
             String avatar = (String) payload.get("picture");
 
-            User user = findOrCreateUser(email, googleId, AuthProvider.GOOGLE, firstName, lastName, avatar);
+            User user = findOrCreateUser(email, googleId, AuthProvider.GOOGLE, firstName, lastName, avatar, requestedRole);
             
             user.setLastLoginDate(LocalDateTime.now());
             userRepository.save(user);
@@ -71,7 +74,60 @@ public class OAuthService {
         }
     }
 
-    private User findOrCreateUser(String email, String providerId, AuthProvider provider, String firstName, String lastName, String avatar) {
+    @Transactional
+    public AuthResponse authenticateWithFacebook(String accessToken, Role requestedRole) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://graph.facebook.com/me?fields=id,first_name,last_name,email,picture&access_token=" + accessToken;
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                Map<String, Object> body = response.getBody();
+                String facebookId = (String) body.get("id");
+                String email = (String) body.get("email");
+                String firstName = (String) body.get("first_name");
+                String lastName = (String) body.get("last_name");
+                
+                String avatar = null;
+                Object pictureObj = body.get("picture");
+                if (pictureObj instanceof Map) {
+                    Map<?, ?> pictureData = (Map<?, ?>) pictureObj;
+                    Object dataObj = pictureData.get("data");
+                    if (dataObj instanceof Map) {
+                        Map<?, ?> data = (Map<?, ?>) dataObj;
+                        avatar = (String) data.get("url");
+                    }
+                }
+                
+                if (email == null) {
+                    throw new RuntimeException("Facebook account does not have an email associated");
+                }
+                
+                User user = findOrCreateUser(email, facebookId, AuthProvider.FACEBOOK, firstName, lastName, avatar, requestedRole);
+                
+                user.setLastLoginDate(LocalDateTime.now());
+                userRepository.save(user);
+                String jwt = jwtService.generateToken(user);
+                
+                return AuthResponse.builder()
+                        .message("Login successful")
+                        .token(jwt)
+                        .userId(user.getId())
+                        .role(user.getRole().name())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .email(user.getEmail())
+                        .build();
+            } else {
+                throw new RuntimeException("Invalid Facebook token");
+            }
+        } catch (Exception e) {
+            log.error("Facebook authentication failed", e);
+            throw new RuntimeException("Facebook authentication failed: " + e.getMessage());
+        }
+    }
+
+    private User findOrCreateUser(String email, String providerId, AuthProvider provider, String firstName, String lastName, String avatar, Role requestedRole) {
         return userRepository.findByProviderIdAndAuthProvider(providerId, provider)
                 .orElseGet(() -> {
                     Optional<User> existingByEmail = userRepository.findByEmail(email);
@@ -88,7 +144,7 @@ public class OAuthService {
                     newUser.setUsername(email.split("@")[0]);
                     newUser.setFirstName(firstName);
                     newUser.setLastName(lastName);
-                    newUser.setRole(Role.STUDENT);
+                    newUser.setRole(requestedRole != null ? requestedRole : Role.STUDENT);
                     newUser.setAuthProvider(provider);
                     newUser.setProviderId(providerId);
                     newUser.setAvatarUrl(avatar);

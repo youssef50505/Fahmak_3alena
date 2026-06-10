@@ -4,6 +4,7 @@ import com.fahmak.alena.user.dto.AuthResponse;
 import com.fahmak.alena.user.dto.LoginRequest;
 import com.fahmak.alena.user.dto.RegisterRequest;
 import com.fahmak.alena.user.dto.OAuthLoginRequest;
+import com.fahmak.alena.user.entity.Role;
 import com.fahmak.alena.user.entity.User;
 import com.fahmak.alena.user.security.JwtService;
 import com.fahmak.alena.user.service.OAuthService;
@@ -34,7 +35,38 @@ public class AuthController {
     @PostMapping("/oauth2/google")
     public ResponseEntity<?> loginWithGoogle(@Valid @RequestBody OAuthLoginRequest request, HttpServletResponse responseObj) {
         try {
-            AuthResponse response = oauthService.authenticateWithGoogle(request.getToken());
+            Role requestedRole = null;
+            if (request.getRole() != null) {
+                try {
+                    requestedRole = Role.valueOf(request.getRole().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    // ignore invalid role
+                }
+            }
+            AuthResponse response = oauthService.authenticateWithGoogle(request.getToken(), requestedRole);
+            // Need to retrieve user to generate refresh token
+            User user = userService.findByEmail(response.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+            String refreshToken = jwtService.generateRefreshToken(user);
+            
+            setCookies(responseObj, response.getToken(), refreshToken);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/oauth2/facebook")
+    public ResponseEntity<?> loginWithFacebook(@Valid @RequestBody OAuthLoginRequest request, HttpServletResponse responseObj) {
+        try {
+            Role requestedRole = null;
+            if (request.getRole() != null) {
+                try {
+                    requestedRole = Role.valueOf(request.getRole().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    // ignore invalid role
+                }
+            }
+            AuthResponse response = oauthService.authenticateWithFacebook(request.getToken(), requestedRole);
             // Need to retrieve user to generate refresh token
             User user = userService.findByEmail(response.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
             String refreshToken = jwtService.generateRefreshToken(user);

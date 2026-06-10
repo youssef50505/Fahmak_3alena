@@ -29,8 +29,19 @@ export class AuthService {
     );
   }
 
-  loginWithGoogle(token: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/oauth2/google`, { token, provider: 'GOOGLE' }, { withCredentials: true }).pipe(
+  loginWithGoogle(token: string, role?: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/oauth2/google`, { token, provider: 'GOOGLE', role }, { withCredentials: true }).pipe(
+      tap((response: AuthResponse) => {
+        if (response) {
+          localStorage.setItem('user', JSON.stringify(response));
+          this.currentUserSubject.next(response);
+        }
+      })
+    );
+  }
+
+  loginWithFacebook(token: string, role?: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/oauth2/facebook`, { token, provider: 'FACEBOOK', role }, { withCredentials: true }).pipe(
       tap((response: AuthResponse) => {
         if (response) {
           localStorage.setItem('user', JSON.stringify(response));

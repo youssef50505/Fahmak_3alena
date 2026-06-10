@@ -1,0 +1,13 @@
+@echo off
+echo Starting Fahmak 3alena Backend and Frontend...
+
+echo Installing frontend dependencies...
+cd frontend
+call npm install
+
+echo Starting Angular Frontend in the background...
+start cmd /k "npm start"
+
+cd ../backend
+echo Starting Spring Boot Backend...
+call mvnw spring-boot:run

@@ -45,7 +45,7 @@ describe('AdaptiveAssessmentComponent', () => {
         title: 'Q1', 
         questions: [{ id: 10, content: 'Q?', options: '["A", "B"]' }] 
       }
-    ];
+    ] as any;
     assessmentServiceSpy.getAllQuizzes.and.returnValue(of(mockQuizzes));
     assessmentServiceSpy.startSession.and.returnValue(of({ sessionId: 123 }));
     currentUserSubject.next({ user: { id: 1 } });
@@ -156,7 +156,7 @@ describe('AdaptiveAssessmentComponent', () => {
         { id: 2, options: '[]' }
       ]
     } as any;
-    component.currentQuestion = component.activeQuiz.questions[0];
+    component.currentQuestion = component.activeQuiz!.questions[0];
 
     component.nextQuestion();
 
@@ -174,7 +174,7 @@ describe('AdaptiveAssessmentComponent', () => {
         { id: 1, options: '[]' }
       ]
     } as any;
-    component.currentQuestion = component.activeQuiz.questions[0];
+    component.currentQuestion = component.activeQuiz!.questions[0];
 
     assessmentServiceSpy.submitSession.and.returnValue(of(null));
     gamificationServiceSpy.awardXp.and.returnValue(of(null));

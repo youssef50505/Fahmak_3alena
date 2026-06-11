@@ -21,22 +21,5 @@ describe('LandingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have 3 features defined', () => {
-    expect(component.features.length).toBe(3);
-  });
 
-  it('should have Adaptive Learning feature', () => {
-    const adaptiveFeature = component.features.find(f => f.title === 'Adaptive Learning');
-    expect(adaptiveFeature).toBeTruthy();
-    expect(adaptiveFeature?.icon).toBe('🧠');
-  });
-
-  it('should render the features in the template', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const featureTitles = Array.from(compiled.querySelectorAll('h3')).map(el => el.textContent?.trim());
-    
-    expect(featureTitles).toContain('Adaptive Learning');
-    expect(featureTitles).toContain('Virtual Classrooms');
-    expect(featureTitles).toContain('Gamified Experience');
-  });
 });

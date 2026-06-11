@@ -47,7 +47,7 @@ export class RegisterComponent implements AfterViewInit {
       { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' }
     );
 
-    gsap.fromTo('.3d-graphic',
+    gsap.fromTo('.graphic-3d',
       { opacity: 0, scale: 0.9, x: -50 },
       { opacity: 1, scale: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.3 }
     );

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Router, ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { RegisterComponent } from './register.component';
 import { AuthService } from '../../../core/services/auth.service';
@@ -11,24 +12,25 @@ describe('RegisterComponent', () => {
   let fixture: ComponentFixture<RegisterComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let oauthHelperSpy: jasmine.SpyObj<OAuthHelper>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let router: Router;
 
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj('AuthService', ['register', 'loginWithGoogle']);
-    oauthHelperSpy = jasmine.createSpyObj('OAuthHelper', ['initializeGoogleSignIn', 'renderGoogleButton']);
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    oauthHelperSpy = jasmine.createSpyObj('OAuthHelper', ['initializeGoogleSignIn', 'renderGoogleButton', 'initializeFacebookSignIn', 'loginWithFacebook']);
 
     await TestBed.configureTestingModule({
-      imports: [RegisterComponent, ReactiveFormsModule],
+      imports: [RegisterComponent, ReactiveFormsModule, RouterTestingModule],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
         { provide: OAuthHelper, useValue: oauthHelperSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: ActivatedRoute, useValue: { queryParams: of({}) } }
       ]
     }).compileComponents();
     
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
     fixture.detectChanges();
   });
 
@@ -65,7 +67,7 @@ describe('RegisterComponent', () => {
     component.registerForm.controls['firstName'].setValue('John');
     component.registerForm.controls['lastName'].setValue('Doe');
     component.registerForm.controls['email'].setValue('john@test.com');
-    component.registerForm.controls['password'].setValue('password123');
+    component.registerForm.controls['password'].setValue('Password123!');
     component.registerForm.controls['role'].setValue('STUDENT');
     component.registerForm.controls['agreeTerms'].setValue(true);
     expect(component.registerForm.valid).toBeTrue();
@@ -82,11 +84,11 @@ describe('RegisterComponent', () => {
     component.registerForm.controls['firstName'].setValue('John');
     component.registerForm.controls['lastName'].setValue('Doe');
     component.registerForm.controls['email'].setValue('john@test.com');
-    component.registerForm.controls['password'].setValue('password123');
+    component.registerForm.controls['password'].setValue('Password123!');
     component.registerForm.controls['role'].setValue('STUDENT');
     component.registerForm.controls['agreeTerms'].setValue(true);
 
-    authServiceSpy.register.and.returnValue(of({ token: '123', user: { role: 'STUDENT' } }));
+    authServiceSpy.register.and.returnValue(of({ token: '123', user: { role: 'STUDENT' } } as any));
 
     component.onSubmit();
 
@@ -95,32 +97,32 @@ describe('RegisterComponent', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@test.com',
-      password: 'password123',
+      password: 'Password123!',
       role: 'STUDENT'
     });
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 
   it('should route to login if registration succeeds but no auto-login token is provided', () => {
     component.registerForm.controls['firstName'].setValue('John');
     component.registerForm.controls['lastName'].setValue('Doe');
     component.registerForm.controls['email'].setValue('john@test.com');
-    component.registerForm.controls['password'].setValue('password123');
+    component.registerForm.controls['password'].setValue('Password123!');
     component.registerForm.controls['role'].setValue('STUDENT');
     component.registerForm.controls['agreeTerms'].setValue(true);
 
-    authServiceSpy.register.and.returnValue(of({ message: 'Success' }));
+    authServiceSpy.register.and.returnValue(of({ message: 'Success' } as any));
 
     component.onSubmit();
 
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/login'], { queryParams: { registered: 'true' } });
+    expect(router.navigate).toHaveBeenCalledWith(['/login'], { queryParams: { registered: 'true' } });
   });
 
   it('should handle backend connection error (status 0)', () => {
     component.registerForm.controls['firstName'].setValue('John');
     component.registerForm.controls['lastName'].setValue('Doe');
     component.registerForm.controls['email'].setValue('john@test.com');
-    component.registerForm.controls['password'].setValue('password123');
+    component.registerForm.controls['password'].setValue('Password123!');
     component.registerForm.controls['role'].setValue('STUDENT');
     component.registerForm.controls['agreeTerms'].setValue(true);
 
@@ -136,7 +138,7 @@ describe('RegisterComponent', () => {
     component.registerForm.controls['firstName'].setValue('John');
     component.registerForm.controls['lastName'].setValue('Doe');
     component.registerForm.controls['email'].setValue('john@test.com');
-    component.registerForm.controls['password'].setValue('password123');
+    component.registerForm.controls['password'].setValue('Password123!');
     component.registerForm.controls['role'].setValue('STUDENT');
     component.registerForm.controls['agreeTerms'].setValue(true);
 
@@ -155,11 +157,11 @@ describe('RegisterComponent', () => {
   });
 
   it('should handle google login successfully', () => {
-    authServiceSpy.loginWithGoogle.and.returnValue(of({ token: '123', user: { role: 'INSTRUCTOR' } }));
+    authServiceSpy.loginWithGoogle.and.returnValue(of({ token: '123', user: { role: 'INSTRUCTOR' } } as any));
     
     component.handleGoogleLogin('google-token');
 
-    expect(authServiceSpy.loginWithGoogle).toHaveBeenCalledWith('google-token');
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/instructor']);
+    expect(authServiceSpy.loginWithGoogle).toHaveBeenCalledWith('google-token', 'STUDENT');
+    expect(router.navigate).toHaveBeenCalledWith(['/instructor']);
   });
 });

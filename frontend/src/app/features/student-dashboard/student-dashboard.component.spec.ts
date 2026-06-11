@@ -36,7 +36,7 @@ describe('StudentDashboardComponent', () => {
     courseServiceSpy.getRecommendedCourses.and.returnValue(of([]));
     courseServiceSpy.getMyEnrollments.and.returnValue(of([]));
     gamificationServiceSpy.getLeaderboard.and.returnValue(of([]));
-    gamificationServiceSpy.getUserProfile.and.returnValue(of(null));
+    gamificationServiceSpy.getUserProfile.and.returnValue(of(null as any));
 
     fixture = TestBed.createComponent(StudentDashboardComponent);
     component = fixture.componentInstance;

@@ -56,3 +56,13 @@ When the backend starts, it automatically seeds the in-memory database with the 
 | **Student** | `omar.student@fahmak.com` | `password123` |
 | **Instructor** | `ahmed.instructor@fahmak.com` | `password123` |
 | **Admin** | `admin@fahmak.com` | `password123` |
+
+---
+
+### 📂 Repository Structure
+- `backend/`: Spring Boot 4.1.0 application (Modular Monolithic Architecture).
+- `frontend/`: Angular 17+ Standalone application with Tailwind CSS and GSAP.
+- `document/`: Project specifications, analysis, system contexts, and API endpoints.
+- `devops/`: Docker Compose and infrastructure files.
+- `schema/`: Database schemas and architecture diagrams.
+- `scripts/`: Helper scripts like `run.bat` for quickly booting both environments.

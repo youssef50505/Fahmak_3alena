@@ -27,7 +27,7 @@ services:
     image: postgres:15-alpine
     container_name: fahmak-backup
     volumes:
-      - ./devops/backup:/scripts
+      - ./backup:/scripts
       - backup-data:/backups
     environment:
       POSTGRES_HOST: postgres

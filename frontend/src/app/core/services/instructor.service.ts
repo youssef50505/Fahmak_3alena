@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { InstructorDashboardResponse } from '../models/instructor.model';
+import { InstructorDashboardResponse, IntegrityReportResponse } from '../models/instructor.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,5 +13,13 @@ export class InstructorService {
 
   getDashboardData(): Observable<InstructorDashboardResponse> {
     return this.http.get<InstructorDashboardResponse>(`${this.apiUrl}/dashboard`);
+  }
+
+  getIntegrityReports(quizId: number): Observable<IntegrityReportResponse[]> {
+    return this.http.get<IntegrityReportResponse[]>(`${this.apiUrl}/integrity/${quizId}`);
+  }
+
+  getFlaggedSessions(): Observable<IntegrityReportResponse[]> {
+    return this.http.get<IntegrityReportResponse[]>(`${this.apiUrl}/integrity/flags`);
   }
 }

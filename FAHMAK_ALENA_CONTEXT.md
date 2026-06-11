@@ -9,11 +9,12 @@
 **Frontend:**
 - **Framework:** Angular 17+ (Using Standalone Components API, no NgModules)
 - **Styling:** Tailwind CSS
+- **Animations:** GSAP (GreenSock Animation Platform) for rich, interactive, and high-performance micro-animations and transitions.
 - **State Management/Core:** TypeScript, HTML, CSS, RxJS, Angular Services
 - **Architecture Features:** Feature-first modular structure with Standalone Components.
 
 **Backend:**
-- **Framework:** Spring Boot 3.x (Java 17)
+- **Framework:** Spring Boot 4.1.0 (Java 17)
 - **Database:** PostgreSQL (production/target), H2 (in-memory for development)
 - **Caching/Data:** Redis
 - **Security:** Spring Security, JWT (Role-based access)
@@ -21,9 +22,9 @@
 
 **Architecture:**
 - **Backend:** Modular Monolithic Architecture. The system is divided logically into distinct packages representing core domains rather than separate physical microservices. Implemented domains include:
-  - `admin`, `ai`, `assessment`, `course`, `gamification`, `instructor`, `notification`, `user`.
+  - `admin`, `ai`, `assessment`, `course`, `gamification`, `instructor`, `notification`, `payment`, `user`.
 - **Frontend:** Feature-first Standalone Architecture. The frontend uses a highly modular structure divided into features:
-  - `accessibility-preferences`, `achievements`, `adaptive-assessment`, `admin-dashboard`, `ai-chat`, `auth`, `course-details`, `immersive-hub`, `instructor-dashboard`, `landing`, `leaderboard`, `library`, `student-dashboard`, `virtual-classroom`.
+  - `accessibility-preferences`, `achievements`, `adaptive-assessment`, `admin-dashboard`, `ai-chat`, `auth`, `course-details`, `course-management`, `immersive-hub`, `instructor-dashboard`, `instructor-integrity`, `landing`, `leaderboard`, `library`, `profile-settings`, `student-dashboard`, `virtual-classroom`.
   - Shared components like `header` and `sidebar`.
   - Core services, guards, interceptors, and models.
 

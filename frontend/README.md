@@ -1,6 +1,24 @@
-# FahmakAlenaFrontend
+# Fahmak Alena - Frontend Application
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+It serves as the main interactive user interface for the **Fahmak Alena** AI-powered educational platform.
+
+## Architecture
+
+The frontend follows a **Feature-First Standalone Architecture**. We do not use NgModules; instead, everything is a `Standalone Component`.
+- **UI Framework:** Angular 17+
+- **Styling:** Tailwind CSS (configured with brand colors in `tailwind.config.js`)
+- **Animations:** GSAP (GreenSock Animation Platform) is heavily used for micro-animations, transitions, and modern UI interactions.
+- **Routing:** Configured centrally in `app.routes.ts` with lazy loading for all major feature components.
+- **State & Data:** Angular Services (`core/services/`) act as the single source of truth for communicating with the Spring Boot backend via REST APIs. Data transfer objects are defined in `core/models/`.
+
+## Key Features
+- **Student & Instructor Dashboards:** Personalized views based on user roles (JWT protected).
+- **Course Management:** Instructors can fully manage their courses (`/instructor/courses`).
+- **Instructor Integrity Dashboard:** Review flagged student sessions and cheat events detected by the AI (`/instructor/integrity`).
+- **Profile Settings:** Update personal user info and preferences (`/profile`).
+- **Immersive Hub & Virtual Classroom:** WebRTC/ZegoCloud powered immersive classrooms.
+- **AI Chat & Adaptive Assessments:** Direct integration with Groq/Vertex AI via the backend.
 
 ## Development server
 
@@ -8,19 +26,11 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The appli
 
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng generate component component-name --standalone` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum`.
 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
 ## Further help
 

@@ -2,16 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface CheckoutRequest {
-  planId: number;
-  successUrl: string;
-  cancelUrl: string;
-}
-
-export interface CheckoutResponse {
-  sessionId: string;
-  checkoutUrl: string;
-}
+import { CheckoutRequest, CheckoutResponse } from '../models/subscription.model';
 
 @Injectable({
   providedIn: 'root'

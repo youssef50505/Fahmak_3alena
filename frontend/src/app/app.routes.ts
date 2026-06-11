@@ -83,11 +83,31 @@ export const routes: Routes = [
     data: { roles: ['INSTRUCTOR'] }
   },
   {
+    path: 'instructor/integrity',
+    loadComponent: () => import('./features/instructor-integrity/instructor-integrity.component')
+      .then(m => m.InstructorIntegrityComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['INSTRUCTOR'] }
+  },
+  {
+    path: 'instructor/courses',
+    loadComponent: () => import('./features/course-management/course-management.component')
+      .then(m => m.CourseManagementComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['INSTRUCTOR'] }
+  },
+  {
     path: 'admin',
     loadComponent: () => import('./features/admin-dashboard/admin-dashboard.component')
       .then(m => m.AdminDashboardComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ADMIN'] }
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/profile-settings/profile-settings.component')
+      .then(m => m.ProfileSettingsComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'preferences',

@@ -20,3 +20,21 @@ export interface InstructorDashboardResponse {
   totalStudents: number;
   flaggedSessionCount: number;
 }
+
+export interface CheatEventDto {
+  id?: number;
+  eventType: string;
+  timestamp: string;
+  metadata: string;
+}
+
+export interface IntegrityReportResponse {
+  sessionId: number;
+  studentName: string;
+  studentEmail: string;
+  quizTitle: string;
+  verdict: string;
+  cheatEvents: CheatEventDto[];
+  startedAt: string;
+  completedAt: string;
+}

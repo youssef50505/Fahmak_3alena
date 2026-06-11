@@ -2,18 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface ImmersiveSession {
-  modelName: string;
-  aiScore: number;
-  notesGenerated: number;
-  currentTranscriptIndex: number;
-}
-
-export interface Peer {
-  name: string;
-  avatarUrl: string;
-  level: string;
-}
+import { ImmersiveSession, Peer } from '../models/immersive-hub.model';
 
 @Injectable({
   providedIn: 'root'

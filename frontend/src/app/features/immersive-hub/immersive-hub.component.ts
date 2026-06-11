@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ImmersiveHubService, ImmersiveSession, Peer } from '../../core/services/immersive-hub.service';
+import { ImmersiveHubService } from '../../core/services/immersive-hub.service';
+import { ImmersiveSession, Peer } from '../../core/models/immersive-hub.model';
 
 interface TranscriptItem {
   time: string;

@@ -9,3 +9,12 @@ export interface Course {
   price: number;
   creationDate: string;
 }
+
+export interface CourseRequest {
+  title: string;
+  description: string;
+  category: string;
+  difficultyLevel: string;
+  price: number;
+}
+

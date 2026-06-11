@@ -8,7 +8,7 @@ To run this project on your local machine, you will need:
 1. **Java 17** or higher
 2. **Node.js** (v18+)
 
-### Step 1: Start the Backend (Spring Boot)
+### Step 1: Start the Backend (Spring Boot 4.1.0)
 Open a terminal in the `backend` folder and run:
 ```bash
 cd backend
@@ -16,7 +16,7 @@ cd backend
 ```
 *(The backend runs on `http://localhost:8080`. It uses an in-memory H2 database, so no external database setup is required!)*
 
-### Step 2: Start the Frontend (Angular)
+### Step 2: Start the Frontend (Angular 17+ with GSAP)
 Open a new terminal in the `frontend` folder and run:
 ```bash
 cd frontend
@@ -24,6 +24,14 @@ npm install
 npm start
 ```
 *(The frontend runs on `http://localhost:4200`)*
+
+---
+
+### 🎨 Latest Updates
+- **Backend Migration:** Successfully upgraded the backend to **Spring Boot 4.1.0**, updating dependencies and mock utilities.
+- **Frontend Sync:** UI fully aligned with the backend's new logic.
+- **New Features:** Added **User Profile Settings**, **Instructor Course Management**, and **Instructor Integrity Dashboard**.
+- **Animations:** Fully integrated **GSAP** into all new frontend components for premium UI/UX.
 
 ---
 

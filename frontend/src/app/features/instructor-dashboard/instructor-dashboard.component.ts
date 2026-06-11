@@ -1,18 +1,21 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink, Router } from '@angular/router';
 import { InstructorService } from '../../core/services/instructor.service';
-import { InstructorDashboardResponse } from '../../core/models/instructor.model';
+import { InstructorDashboardResponse, StudentProgress } from '../../core/models/instructor.model';
 import { AuthService } from '../../core/services/auth.service';
 import { Subscription } from 'rxjs';
+import { StudentProfileModalComponent } from './components/student-profile-modal/student-profile-modal.component';
+import gsap from 'gsap';
 
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, StudentProfileModalComponent],
   templateUrl: './instructor-dashboard.component.html',
   styleUrl: './instructor-dashboard.component.css'
 })
-export class InstructorDashboardComponent implements OnInit, OnDestroy {
+export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   dashboardData: InstructorDashboardResponse | null = null;
   isLoading = true;
   userName = '';
@@ -21,11 +24,18 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
   suspiciousSessions = 0;
   liveSession1Joined = Math.floor(Math.random() * 100) + 20;
   liveSession2Joined = Math.floor(Math.random() * 100) + 50;
+  
+  selectedStudent: StudentProgress | null = null;
+
+  @ViewChildren('gsapCard') gsapCards!: QueryList<ElementRef>;
+  @ViewChildren('gsapRow') gsapRows!: QueryList<ElementRef>;
+
   private authSub?: Subscription;
 
   constructor(
     private instructorService: InstructorService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -43,12 +53,73 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
           this.suspiciousSessions = data.flaggedSessionCount;
         }
         this.isLoading = false;
+        
+        // Wait a tick for the DOM to render the fetched data rows, then animate them
+        setTimeout(() => this.animateRows(), 50);
       },
       error: (err) => {
         console.error('Error fetching instructor dashboard data', err);
         this.isLoading = false;
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    // Initial animations for static elements
+    gsap.from('.header-content', { 
+      opacity: 0, 
+      y: -20, 
+      duration: 0.6, 
+      ease: 'power3.out' 
+    });
+
+    gsap.from('.alert-banner', { 
+      opacity: 0, 
+      x: -30, 
+      duration: 0.5, 
+      delay: 0.2, 
+      ease: 'back.out(1.5)' 
+    });
+
+    // Staggered cards animation
+    if (this.gsapCards.length > 0) {
+      gsap.from(this.gsapCards.map(c => c.nativeElement), {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power2.out',
+        delay: 0.3
+      });
+    }
+  }
+
+  animateRows(): void {
+    if (this.gsapRows && this.gsapRows.length > 0) {
+      gsap.from(this.gsapRows.map(r => r.nativeElement), {
+        opacity: 0,
+        x: -20,
+        duration: 0.4,
+        stagger: 0.05,
+        ease: 'power2.out'
+      });
+    }
+  }
+
+  viewStudentDetails(student: StudentProgress): void {
+    this.selectedStudent = student;
+  }
+
+  closeStudentDetails(): void {
+    this.selectedStudent = null;
+  }
+
+  navigateToCourses(): void {
+    this.router.navigate(['/instructor/courses']);
+  }
+
+  navigateToIntegrity(): void {
+    this.router.navigate(['/instructor/integrity']);
   }
 
   ngOnDestroy(): void {

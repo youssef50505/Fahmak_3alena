@@ -1,210 +1,285 @@
-<div class="max-w-7xl mx-auto space-y-6 pb-12">
+<div class="max-w-7xl mx-auto space-y-6 pb-12 overflow-x-hidden">
 
   <!-- Header Area -->
-  <div class="flex justify-between items-end">
+  <div class="header-content flex justify-between items-end mb-8">
     <div>
       <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Instructor Command Center</h1>
       <p class="text-brand-600 font-semibold mt-1">Welcome back, {{ userName }}</p>
       <p class="text-gray-500 mt-1">Real-time monitoring and analytics for your active courses.</p>
     </div>
     <div class="flex gap-3">
-      <button class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors shadow-sm flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+      <button class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-brand-600 font-medium transition-colors flex items-center gap-2 transform hover:-translate-y-0.5 duration-200">
+        <i class="fa-solid fa-file-export"></i>
         Export Reports
       </button>
-      <button class="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-medium shadow-md transition-all flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      <button (click)="navigateToCourses()" class="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-medium shadow-sm transition-all flex items-center gap-2 transform hover:-translate-y-0.5 duration-200">
+        <i class="fa-solid fa-plus"></i>
         Create New Module
       </button>
     </div>
   </div>
 
   <!-- Cheating Detection Alert -->
-  <div class="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5 flex items-center justify-between shadow-sm">
+  @if(suspiciousSessions > 0) {
+  <div class="alert-banner bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5 flex items-center justify-between">
     <div class="flex items-center gap-4">
       <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.962-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
       </div>
       <div>
         <h4 class="font-bold text-red-800">Cheating Detection Alerts</h4>
-        <p class="text-red-700 text-sm">{{ suspiciousSessions }} suspicious exam sessions detected in "Intro to AI Ethics - Module 4". Immediate review required.</p>
+        <p class="text-red-700 text-sm">{{ suspiciousSessions }} suspicious exam sessions detected recently. Immediate review required.</p>
       </div>
     </div>
     <div class="flex items-center gap-3">
-      <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm transition-colors">Review Flags</button>
-      <button class="text-red-600 hover:text-red-800 font-medium text-sm transition-colors">Dismiss</button>
+      <button (click)="navigateToIntegrity()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm transition-colors">Review Flags</button>
     </div>
   </div>
+  }
 
   <!-- Stats Cards -->
-  <div class="grid grid-cols-3 gap-6">
-    <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div #gsapCard class="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-200 transition-colors duration-300 group cursor-default">
       <div class="flex items-center justify-between mb-3">
-        <span class="text-sm text-gray-500">Total Active Students</span>
-        <div class="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-500">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <span class="text-sm font-medium text-gray-500 group-hover:text-brand-600 transition-colors">Total Active Students</span>
+        <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-50 group-hover:text-brand-500 transition-all duration-300">
+          <i class="fa-solid fa-users"></i>
         </div>
       </div>
-      <p class="text-3xl font-extrabold text-gray-900">{{ dashboardData?.stats?.totalActiveStudents || '...' }}</p>
-      <p class="text-sm text-emerald-600 mt-1 flex items-center gap-1">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+      <p class="text-3xl font-bold text-gray-900">{{ dashboardData?.stats?.totalActiveStudents || '0' }}</p>
+      <p class="text-sm text-brand-600 mt-1 flex items-center gap-1 font-medium">
+        <i class="fa-solid fa-arrow-trend-up"></i>
         +12% from last semester
       </p>
     </div>
-    <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+    
+    <div #gsapCard class="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-200 transition-colors duration-300 group cursor-default">
       <div class="flex items-center justify-between mb-3">
-        <span class="text-sm text-gray-500">Avg. Course Score</span>
-        <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <span class="text-sm font-medium text-gray-500 group-hover:text-brand-600 transition-colors">Avg. Course Score</span>
+        <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-50 group-hover:text-brand-500 transition-all duration-300">
+          <i class="fa-solid fa-chart-line"></i>
         </div>
       </div>
-      <p class="text-3xl font-extrabold text-gray-900">{{ dashboardData?.stats?.avgCourseScore || '...' }}%</p>
-      <p class="text-sm text-emerald-600 mt-1 flex items-center gap-1">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+      <p class="text-3xl font-bold text-gray-900">{{ dashboardData?.stats?.avgCourseScore || '0' }}%</p>
+      <p class="text-sm text-brand-600 mt-1 flex items-center gap-1 font-medium">
+        <i class="fa-solid fa-arrow-trend-up"></i>
         +4.1% class performance trend
       </p>
     </div>
-    <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+
+    <div #gsapCard class="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-200 transition-colors duration-300 group cursor-default">
       <div class="flex items-center justify-between mb-3">
-        <span class="text-sm text-gray-500">Completion Rate</span>
-        <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span class="text-sm font-medium text-gray-500 group-hover:text-brand-600 transition-colors">Completion Rate</span>
+        <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-50 group-hover:text-brand-500 transition-all duration-300">
+          <i class="fa-solid fa-check-double"></i>
         </div>
       </div>
-      <p class="text-3xl font-extrabold text-gray-900">{{ dashboardData?.stats?.completionRate || '...' }}%</p>
-      <p class="text-sm text-emerald-600 mt-1 flex items-center gap-1">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+      <p class="text-3xl font-bold text-gray-900">{{ dashboardData?.stats?.completionRate || '0' }}%</p>
+      <p class="text-sm text-brand-600 mt-1 flex items-center gap-1 font-medium">
+        <i class="fa-solid fa-arrow-trend-up"></i>
         +0.8% projected for finals
       </p>
     </div>
   </div>
 
   <!-- Student Academic Progress Table -->
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+  <div #gsapCard class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
-        <h3 class="text-xl font-bold text-gray-900">Student Academic Progress</h3>
-        <p class="text-sm text-gray-500">Comprehensive overview of enrollment, progress, and performance metrics.</p>
+        <h3 class="text-lg font-bold text-gray-900">Student Academic Progress</h3>
+        <p class="text-sm text-gray-500 mt-1">Comprehensive overview of enrollment, progress, and performance metrics.</p>
       </div>
-      <div class="flex items-center gap-3">
-        <div class="relative">
-          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-          <input type="text" placeholder="Filter by course..." class="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all">
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="relative w-full md:w-64">
+          <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input type="text" placeholder="Filter by course..." class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all">
         </div>
       </div>
     </div>
-    <table class="w-full">
-      <thead>
-        <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          <th class="px-6 py-4">Student</th>
-          <th class="px-6 py-4">Enrolled Course</th>
-          <th class="px-6 py-4">Progress</th>
-          <th class="px-6 py-4">Current Score</th>
-          <th class="px-6 py-4">Quick Actions</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        @for (student of dashboardData?.studentProgress; track student.id) {
-        <tr class="hover:bg-gray-50 transition-colors">
-          <td class="px-6 py-4">
-            <div class="flex items-center gap-3">
-              <img class="w-9 h-9 rounded-full border border-gray-200" [src]="student.avatarUrl" alt="">
-              <div>
-                <p class="text-sm font-semibold text-gray-900">{{ student.studentName }}</p>
-                <p class="text-xs text-gray-500">ID: {{ student.id }}</p>
-              </div>
-            </div>
-          </td>
-          <td class="px-6 py-4"><span class="text-sm text-gray-700 bg-gray-100 px-2 py-1 rounded">{{ student.enrolledCourse }}</span></td>
-          <td class="px-6 py-4">
-            <div>
-              <p class="text-xs text-gray-500 mb-1">{{ student.progressPercentage }}% Complete</p>
-              <div class="w-32 bg-gray-200 rounded-full h-1.5">
-                <div class="bg-brand-500 h-1.5 rounded-full" [style.width.%]="student.progressPercentage"></div>
-              </div>
-            </div>
-          </td>
-          <td class="px-6 py-4"><span class="text-sm font-bold text-gray-900 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">{{ student.currentScore }}</span></td>
-          <td class="px-6 py-4">
-            <div class="flex items-center gap-2">
-              <button class="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1 transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                Details
-              </button>
-              <button class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 hover:bg-brand-100 flex items-center justify-center transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-        } @empty {
-        <tr>
-          <td colspan="5" class="px-6 py-8 text-center text-gray-500">No student data available.</td>
-        </tr>
-        }
-      </tbody>
-    </table>
-    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-      <p class="text-sm text-gray-500">Showing {{ dashboardData?.studentProgress?.length || 0 }} of {{ dashboardData?.totalStudents || 0 }} students</p>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-4">Student</th>
+            <th class="px-6 py-4">Enrolled Course</th>
+            <th class="px-6 py-4">Progress</th>
+            <th class="px-6 py-4">Current Score</th>
+            <th class="px-6 py-4">Quick Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @if (isLoading) {
+            <tr>
+              <td colspan="5" class="px-6 py-12 text-center">
+                <i class="fa-solid fa-circle-notch fa-spin text-brand-500 text-3xl"></i>
+                <p class="text-gray-500 mt-3 font-medium">Loading student data...</p>
+              </td>
+            </tr>
+          } @else {
+            @for (student of dashboardData?.studentProgress; track student.id) {
+            <tr #gsapRow class="hover:bg-gray-50/50 transition-colors group">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <img class="w-9 h-9 rounded-full border border-gray-200" [src]="student.avatarUrl" alt="">
+                  <div>
+                    <p class="text-sm font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">{{ student.studentName }}</p>
+                    <p class="text-xs text-gray-500">ID: {{ student.id }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                  {{ student.enrolledCourse }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="w-full max-w-xs">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-medium text-gray-700">{{ student.progressPercentage }}%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                    <div class="bg-brand-500 h-1.5 rounded-full transition-all duration-1000 ease-out" [style.width.%]="student.progressPercentage"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-sm font-semibold text-gray-900 px-3 py-1 bg-white rounded border border-gray-200 inline-block min-w-[3rem] text-center">
+                  {{ student.currentScore }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                  <button (click)="viewStudentDetails(student)" class="text-xs text-brand-600 hover:text-brand-800 hover:bg-brand-50 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-eye"></i>
+                    Details
+                  </button>
+                  <button class="w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-brand-600 flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-envelope"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                <div class="flex flex-col items-center justify-center">
+                  <i class="fa-solid fa-users-slash text-4xl text-gray-300 mb-3"></i>
+                  <p class="font-medium text-gray-600">No student data available.</p>
+                  <p class="text-sm text-gray-400 mt-1">Enrollments will appear here once students join your courses.</p>
+                </div>
+              </td>
+            </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50">
+      <p class="text-sm text-gray-500 font-medium">Showing <span class="font-semibold text-gray-900">{{ dashboardData?.studentProgress?.length || 0 }}</span> of <span class="font-semibold text-gray-900">{{ dashboardData?.totalStudents || 0 }}</span> students</p>
       <div class="flex items-center gap-2">
-        <button class="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">Previous</button>
-        <button class="px-3 py-1 text-sm text-white bg-brand-500 rounded-lg">1</button>
-        <button class="px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">2</button>
-        <button class="px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">3</button>
-        <button class="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">Next</button>
+        <button class="px-3 py-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors" disabled>Previous</button>
+        <button class="px-3 py-1 text-sm font-semibold text-brand-700 bg-brand-50 border border-brand-200 rounded">1</button>
+        <button class="px-3 py-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors" disabled>Next</button>
       </div>
     </div>
   </div>
 
   <!-- Bottom Row -->
-  <div class="grid grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Upcoming Live Sessions -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+    <div #gsapCard class="bg-white rounded-xl border border-gray-200 p-6">
       <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2 mb-5">
-        <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+        <div class="w-8 h-8 rounded-lg bg-gray-50 text-gray-500 flex items-center justify-center border border-gray-100">
+          <i class="fa-solid fa-video"></i>
+        </div>
         Upcoming Live Sessions
       </h3>
-      <div class="space-y-4">
-        <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-100">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">T</div>
+      <div class="space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-gray-100 hover:border-brand-200 hover:bg-gray-50 transition-colors group cursor-pointer">
+          <div class="flex items-center gap-4 mb-3 sm:mb-0">
+            <div class="w-12 h-12 rounded border border-gray-200 bg-white flex flex-col items-center justify-center group-hover:border-brand-300 transition-colors">
+              <span class="text-[10px] font-semibold text-gray-500 uppercase">Today</span>
+              <span class="text-lg font-bold text-gray-900 leading-none">14</span>
+            </div>
             <div>
-              <p class="font-semibold text-gray-900">Ethics in Generative AI</p>
-              <p class="text-xs text-gray-500">Today, 14:00 PM</p>
+              <p class="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">Ethics in Generative AI</p>
+              <p class="text-xs text-gray-500 font-medium mt-0.5"><i class="fa-regular fa-clock mr-1"></i> 14:00 PM - 15:30 PM</p>
             </div>
           </div>
-          <span class="text-sm text-gray-500">{{ liveSession1Joined }} Joined</span>
+          <div class="flex items-center gap-4">
+            <div class="text-right">
+              <p class="text-sm font-semibold text-gray-900">{{ liveSession1Joined }}</p>
+              <p class="text-[10px] uppercase tracking-wider text-gray-500">Joined</p>
+            </div>
+            <button class="w-8 h-8 rounded-full text-gray-400 group-hover:text-brand-600 flex items-center justify-center transition-colors">
+              <i class="fa-solid fa-chevron-right text-sm"></i>
+            </button>
+          </div>
         </div>
-        <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-100">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">T</div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-gray-100 hover:border-brand-200 hover:bg-gray-50 transition-colors group cursor-pointer">
+          <div class="flex items-center gap-4 mb-3 sm:mb-0">
+            <div class="w-12 h-12 rounded border border-gray-200 bg-white flex flex-col items-center justify-center group-hover:border-brand-300 transition-colors">
+              <span class="text-[10px] font-semibold text-gray-500 uppercase">Tmrw</span>
+              <span class="text-lg font-bold text-gray-900 leading-none">15</span>
+            </div>
             <div>
-              <p class="font-semibold text-gray-900">Q&A: Neural Architecture</p>
-              <p class="text-xs text-gray-500">Tomorrow, 09:30 AM</p>
+              <p class="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">Q&A: Neural Architecture</p>
+              <p class="text-xs text-gray-500 font-medium mt-0.5"><i class="fa-regular fa-clock mr-1"></i> 09:30 AM - 11:00 AM</p>
             </div>
           </div>
-          <span class="text-sm text-gray-500">{{ liveSession2Joined }} Joined</span>
+          <div class="flex items-center gap-4">
+            <div class="text-right">
+              <p class="text-sm font-semibold text-gray-900">{{ liveSession2Joined }}</p>
+              <p class="text-[10px] uppercase tracking-wider text-gray-500">Joined</p>
+            </div>
+            <button class="w-8 h-8 rounded-full text-gray-400 group-hover:text-brand-600 flex items-center justify-center transition-colors">
+              <i class="fa-solid fa-chevron-right text-sm"></i>
+            </button>
+          </div>
         </div>
       </div>
+      <button class="w-full mt-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">View Schedule</button>
     </div>
 
     <!-- Resource Management -->
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+    <div #gsapCard class="bg-white rounded-xl border border-gray-200 p-6 flex flex-col">
       <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2 mb-5">
-        <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
+        <div class="w-8 h-8 rounded-lg bg-gray-50 text-gray-500 flex items-center justify-center border border-gray-100">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
         Resource Management
       </h3>
-      <div class="grid grid-cols-2 gap-4 mb-6">
-        <div class="bg-gray-50 rounded-xl p-5 text-center border border-gray-100">
-          <p class="text-3xl font-extrabold text-gray-900">{{ pendingAssignments }}</p>
-          <p class="text-sm text-gray-500 mt-1">Pending Assignments</p>
+      <div class="grid grid-cols-2 gap-4 mb-auto">
+        <div class="rounded-lg p-5 text-center border border-gray-100 hover:border-brand-200 hover:bg-gray-50 transition-colors cursor-pointer group">
+          <div class="w-10 h-10 mx-auto rounded border border-gray-100 bg-white flex items-center justify-center text-gray-400 group-hover:text-brand-500 mb-3 transition-colors">
+            <i class="fa-solid fa-file-signature"></i>
+          </div>
+          <p class="text-2xl font-bold text-gray-900">{{ pendingAssignments }}</p>
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1">Pending Grads</p>
         </div>
-        <div class="bg-gray-50 rounded-xl p-5 text-center border border-gray-100">
-          <p class="text-3xl font-extrabold text-gray-900">{{ newDiscussions }}</p>
-          <p class="text-sm text-gray-500 mt-1">New Discussion Posts</p>
+        <div class="rounded-lg p-5 text-center border border-gray-100 hover:border-brand-200 hover:bg-gray-50 transition-colors cursor-pointer group">
+          <div class="w-10 h-10 mx-auto rounded border border-gray-100 bg-white flex items-center justify-center text-gray-400 group-hover:text-brand-500 mb-3 transition-colors">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <p class="text-2xl font-bold text-gray-900">{{ newDiscussions }}</p>
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1">New Posts</p>
         </div>
       </div>
-      <button class="w-full py-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-medium shadow-md transition-all">Open Content Manager</button>
+      <button (click)="navigateToCourses()" class="w-full mt-6 py-2.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-medium transition-colors flex items-center justify-center gap-2">
+        <i class="fa-solid fa-layer-group"></i>
+        Open Content Manager
+      </button>
     </div>
   </div>
 </div>
+
+<!-- Render the Student Profile Modal when a student is selected -->
+@if (selectedStudent) {
+  <app-student-profile-modal 
+    [student]="selectedStudent" 
+    (close)="closeStudentDetails()">
+  </app-student-profile-modal>
+}

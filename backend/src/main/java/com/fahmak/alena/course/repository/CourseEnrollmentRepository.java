@@ -9,9 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseEnrollmentRepository extends JpaRepository<CourseEnrollment, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"student", "course"})
     List<CourseEnrollment> findByStudent(User student);
+    
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"student", "course"})
     List<CourseEnrollment> findByCourse(Course course);
+    
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"student", "course"})
     List<CourseEnrollment> findByCourseIn(List<Course> courses);
+    
     Optional<CourseEnrollment> findByStudentAndCourse(User student, Course course);
     boolean existsByStudentAndCourse(User student, Course course);
 }

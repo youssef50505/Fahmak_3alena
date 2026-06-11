@@ -74,21 +74,33 @@ class InstructorServiceTest {
 
     @Test
     void getFlaggedSessions_ShouldReturnFlaggedOnly() {
+        User instructor = new User();
+        instructor.setEmail("inst@test.com");
+        when(userService.findByEmail("inst@test.com")).thenReturn(Optional.of(instructor));
+
         QuizSession session1 = new QuizSession();
         session1.setId(1L);
         session1.setIntegrityVerdict(IntegrityVerdict.FLAGGED);
         session1.setUser(new User());
-        session1.setQuiz(new Quiz());
+        Course course = new Course();
+        course.setId(99L);
+        course.setInstructor(instructor);
+        when(courseService.getInstructorCourses(instructor)).thenReturn(List.of(course));
+        Quiz quiz1 = new Quiz();
+        quiz1.setCourse(course);
+        session1.setQuiz(quiz1);
         
         QuizSession session2 = new QuizSession();
         session2.setId(2L);
         session2.setIntegrityVerdict(IntegrityVerdict.CLEAN);
         session2.setUser(new User());
-        session2.setQuiz(new Quiz());
+        Quiz quiz2 = new Quiz();
+        quiz2.setCourse(course);
+        session2.setQuiz(quiz2);
 
         when(quizSessionRepository.findAll()).thenReturn(List.of(session1, session2));
 
-        List<IntegrityReportResponse> response = instructorService.getFlaggedSessions();
+        List<IntegrityReportResponse> response = instructorService.getFlaggedSessions("inst@test.com");
         assertEquals(1, response.size());
         assertEquals(1L, response.get(0).getSessionId());
         assertEquals(IntegrityVerdict.FLAGGED, response.get(0).getVerdict());

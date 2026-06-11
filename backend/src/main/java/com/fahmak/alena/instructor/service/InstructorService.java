@@ -80,7 +80,7 @@ public class InstructorService {
                 .stats(stats)
                 .studentProgress(studentDtos)
                 .totalStudents(totalStudents)
-                .flaggedSessionCount(getFlaggedSessions().size())
+                .flaggedSessionCount(getFlaggedSessions(email).size())
                 .build();
     }
 
@@ -99,8 +99,14 @@ public class InstructorService {
     }
 
     @Transactional(readOnly = true)
-    public List<IntegrityReportResponse> getIntegrityReports(Long quizId) {
+    public List<IntegrityReportResponse> getIntegrityReports(Long quizId, String email) {
+        User instructor = userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+        List<Long> instructorCourseIds = courseService.getInstructorCourses(instructor).stream()
+                .map(Course::getId).toList();
+
         return quizSessionRepository.findByQuizId(quizId).stream()
+                .filter(session -> session.getQuiz().getCourse() != null && instructorCourseIds.contains(session.getQuiz().getCourse().getId()))
                 .map(session -> IntegrityReportResponse.builder()
                         .sessionId(session.getId())
                         .studentName(session.getUser().getFirstName() + " " + session.getUser().getLastName())
@@ -117,8 +123,14 @@ public class InstructorService {
     }
 
     @Transactional(readOnly = true)
-    public List<IntegrityReportResponse> getFlaggedSessions() {
+    public List<IntegrityReportResponse> getFlaggedSessions(String email) {
+        User instructor = userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+        List<Long> instructorCourseIds = courseService.getInstructorCourses(instructor).stream()
+                .map(Course::getId).toList();
+
         return quizSessionRepository.findAll().stream()
+                .filter(session -> session.getQuiz().getCourse() != null && instructorCourseIds.contains(session.getQuiz().getCourse().getId()))
                 .filter(s -> s.getIntegrityVerdict() == IntegrityVerdict.FLAGGED || s.getIntegrityVerdict() == IntegrityVerdict.SUSPICIOUS)
                 .map(session -> IntegrityReportResponse.builder()
                         .sessionId(session.getId())

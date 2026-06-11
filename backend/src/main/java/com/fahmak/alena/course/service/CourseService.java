@@ -60,14 +60,22 @@ public class CourseService {
         course.setCreationDate(LocalDateTime.now());
         course.setStatus("DRAFT");
         
+        if (instructorEmail != null) {
+            User instructor = userService.findByEmail(instructorEmail)
+                    .orElseThrow(() -> new RuntimeException("Instructor not found"));
+            course.setInstructor(instructor);
+        }
+        
         course = courseRepository.save(course);
         return mapToCourseResponse(course);
     }
 
     @Transactional
-    public CourseResponse updateCourse(Long id, CourseRequest request) {
+    public CourseResponse updateCourse(Long id, CourseRequest request, String requesterEmail) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
+                
+        verifyCourseOwnership(course, requesterEmail);
                 
         course.setTitle(request.getTitle());
         course.setDescription(request.getDescription());
@@ -82,10 +90,26 @@ public class CourseService {
     }
 
     @Transactional
-    public void deleteCourse(Long id) {
+    public void deleteCourse(Long id, String requesterEmail) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
+        
+        verifyCourseOwnership(course, requesterEmail);
+        
         courseRepository.delete(course);
+    }
+
+    private void verifyCourseOwnership(Course course, String requesterEmail) {
+        User requester = userService.findByEmail(requesterEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+                
+        if (requester.getRole() == com.fahmak.alena.user.entity.Role.ADMIN) {
+            return; // Admins can modify any course
+        }
+        
+        if (course.getInstructor() == null || !course.getInstructor().getEmail().equals(requesterEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException("You do not have permission to modify this course");
+        }
     }
 
     @Transactional

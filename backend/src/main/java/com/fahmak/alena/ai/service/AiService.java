@@ -36,16 +36,29 @@ public class AiService {
 
     public AiChatResponse getAiResponse(AiChatRequest request) {
         HttpEntity<Map<String, Object>> entity = buildRequestEntity(request);
+        int maxRetries = 3;
 
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> responseBody = restTemplate.postForObject(apiUrl, entity, Map.class);
-            String replyText = extractReplyText(responseBody);
-            return new AiChatResponse(replyText);
-        } catch (Exception e) {
-            log.error("Failed to communicate with OpenAI API", e);
-            return new AiChatResponse(FALLBACK_RESPONSE);
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> responseBody = restTemplate.postForObject(apiUrl, entity, Map.class);
+                String replyText = extractReplyText(responseBody);
+                return new AiChatResponse(replyText);
+            } catch (Exception e) {
+                log.warn("Failed to communicate with OpenAI API (Attempt {} of {}): {}", attempt, maxRetries, e.getMessage());
+                if (attempt == maxRetries) {
+                    log.error("All retries exhausted for OpenAI API", e);
+                    return new AiChatResponse(FALLBACK_RESPONSE);
+                }
+                try {
+                    Thread.sleep(1000 * attempt); // Exponential-ish backoff
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return new AiChatResponse(FALLBACK_RESPONSE);
+                }
+            }
         }
+        return new AiChatResponse(FALLBACK_RESPONSE);
     }
 
     private HttpEntity<Map<String, Object>> buildRequestEntity(AiChatRequest request) {

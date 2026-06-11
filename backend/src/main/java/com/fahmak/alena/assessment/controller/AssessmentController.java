@@ -56,14 +56,18 @@ public class AssessmentController {
     }
 
     @PostMapping("/sessions/{sessionId}/events")
-    public ResponseEntity<?> reportEvents(@PathVariable Long sessionId, @RequestBody CheatEventBatchRequest request) {
-        integrityService.processEvents(sessionId, request.getEvents());
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<?> reportEvents(@PathVariable Long sessionId, @RequestBody CheatEventBatchRequest request, org.springframework.security.core.Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        integrityService.processEvents(sessionId, request.getEvents(), email);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sessions/{sessionId}/submit")
-    public ResponseEntity<?> submitSession(@PathVariable Long sessionId) {
-        integrityService.finalizeSession(sessionId);
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<?> submitSession(@PathVariable Long sessionId, org.springframework.security.core.Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        integrityService.finalizeSession(sessionId, email);
         return ResponseEntity.ok().build();
     }
 }

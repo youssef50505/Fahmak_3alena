@@ -5,6 +5,8 @@ import com.fahmak.alena.ai.dto.AiChatResponse;
 import com.fahmak.alena.ai.service.AiService;
 import com.fahmak.alena.user.entity.Role;
 import com.fahmak.alena.user.entity.User;
+import com.fahmak.alena.ai.repository.ChatRepository;
+import com.fahmak.alena.user.repository.UserPreferencesRepository;
 import com.fahmak.alena.user.repository.UserRepository;
 import com.fahmak.alena.user.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -40,11 +42,17 @@ class AiControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @MockBean
+    @MockitoBean
     private AiService aiService;
 
-    @MockBean
+    @MockitoBean
     private UserRepository userRepository;
+
+    @MockitoBean
+    private ChatRepository chatRepository;
+
+    @MockitoBean
+    private UserPreferencesRepository userPreferencesRepository;
 
     @Autowired
     private JwtService jwtService;

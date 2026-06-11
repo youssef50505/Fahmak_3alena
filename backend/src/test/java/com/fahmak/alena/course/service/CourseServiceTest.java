@@ -55,6 +55,10 @@ class CourseServiceTest {
         CourseRequest req = new CourseRequest();
         req.setTitle("New Course");
         
+        User instructor = new User();
+        instructor.setEmail("instructor@test.com");
+        when(userService.findByEmail("instructor@test.com")).thenReturn(Optional.of(instructor));
+
         Course savedCourse = new Course();
         savedCourse.setId(10L);
         savedCourse.setTitle("New Course");

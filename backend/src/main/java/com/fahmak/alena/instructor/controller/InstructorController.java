@@ -27,12 +27,14 @@ public class InstructorController {
     }
 
     @GetMapping("/integrity/{quizId}")
-    public ResponseEntity<List<IntegrityReportResponse>> getIntegrityReports(@PathVariable Long quizId) {
-        return ResponseEntity.ok(instructorService.getIntegrityReports(quizId));
+    public ResponseEntity<List<IntegrityReportResponse>> getIntegrityReports(@PathVariable Long quizId, org.springframework.security.core.Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(instructorService.getIntegrityReports(quizId, email));
     }
 
     @GetMapping("/integrity/flags")
-    public ResponseEntity<List<IntegrityReportResponse>> getFlaggedSessions() {
-        return ResponseEntity.ok(instructorService.getFlaggedSessions());
+    public ResponseEntity<List<IntegrityReportResponse>> getFlaggedSessions(org.springframework.security.core.Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(instructorService.getFlaggedSessions(email));
     }
 }

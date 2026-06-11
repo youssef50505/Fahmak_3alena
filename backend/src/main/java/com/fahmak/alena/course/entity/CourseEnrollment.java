@@ -2,20 +2,23 @@ package com.fahmak.alena.course.entity;
 
 import com.fahmak.alena.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "course_enrollments", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "course_id"})
 })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class CourseEnrollment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)

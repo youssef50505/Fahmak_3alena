@@ -21,9 +21,13 @@ public class IntegrityService {
     private final CheatEventRepository cheatEventRepository;
 
     @Transactional
-    public void processEvents(Long sessionId, List<CheatEventDTO> events) {
+    public void processEvents(Long sessionId, List<CheatEventDTO> events, String email) {
         QuizSession session = quizSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        if (session.getUser() == null || !session.getUser().getEmail().equals(email)) {
+            throw new org.springframework.security.access.AccessDeniedException("You do not have permission to modify this session");
+        }
 
         for (CheatEventDTO dto : events) {
             CheatEvent event = new CheatEvent();
@@ -62,9 +66,13 @@ public class IntegrityService {
     }
 
     @Transactional
-    public void finalizeSession(Long sessionId) {
+    public void finalizeSession(Long sessionId, String email) {
         QuizSession session = quizSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        if (session.getUser() == null || !session.getUser().getEmail().equals(email)) {
+            throw new org.springframework.security.access.AccessDeniedException("You do not have permission to finalize this session");
+        }
 
         double riskScore = calculateRiskScore(session);
         session.setRiskScore(riskScore);

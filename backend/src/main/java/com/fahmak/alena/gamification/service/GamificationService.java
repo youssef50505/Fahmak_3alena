@@ -11,6 +11,8 @@ import com.fahmak.alena.notification.entity.NotificationType;
 import com.fahmak.alena.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,7 @@ public class GamificationService {
      * Ensures the authenticated user can only award XP to themselves.
      */
     @Transactional
+    @CacheEvict(value = "leaderboard", allEntries = true)
     public void awardXpSecure(String authenticatedEmail, Long targetUserId, AwardXpRequest request) {
         User authenticatedUser = userService.findByEmail(authenticatedEmail)
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
@@ -102,6 +105,7 @@ public class GamificationService {
     }
 
     @Transactional
+    @CacheEvict(value = "leaderboard", allEntries = true)
     public void awardXp(Long userId, String activityType, Integer xp) {
         User user = userService.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -123,6 +127,7 @@ public class GamificationService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "leaderboard")
     public List<LeaderboardEntryDTO> getLeaderboard() {
         List<Object[]> results = activityRepository.getLeaderboard(PageRequest.of(0, 5));
         List<LeaderboardEntryDTO> mapped = new ArrayList<>();

@@ -122,8 +122,5 @@ describe('LoginComponent', () => {
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/admin']);
   });
   
-  it('should set active module', () => {
-    component.setModule('ADMIN');
-    expect(component.activeModule).toEqual('ADMIN');
-  });
+
 });

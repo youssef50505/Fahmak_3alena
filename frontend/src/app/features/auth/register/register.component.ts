@@ -17,7 +17,7 @@ export class RegisterComponent implements AfterViewInit {
   registerForm: FormGroup;
   error: string = '';
   isLoading: boolean = false;
-  activeModule: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN' = 'STUDENT';
+  activeModule: 'STUDENT' | 'INSTRUCTOR' = 'STUDENT';
 
   constructor(
     private fb: FormBuilder,
@@ -110,7 +110,7 @@ export class RegisterComponent implements AfterViewInit {
     });
   }
 
-  setModule(module: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN') {
+  setModule(module: 'STUDENT' | 'INSTRUCTOR') {
     this.activeModule = module;
     this.registerForm.patchValue({ role: module });
   }

@@ -17,7 +17,7 @@ export class LoginComponent implements AfterViewInit {
   loginForm: FormGroup;
   error: string = '';
   isLoading: boolean = false;
-  activeModule: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN' = 'STUDENT';
+  activeModule: 'STUDENT' | 'INSTRUCTOR' = 'STUDENT';
 
   constructor(
     private fb: FormBuilder,
@@ -88,7 +88,7 @@ export class LoginComponent implements AfterViewInit {
     });
   }
 
-  setModule(module: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN') {
+  setModule(module: 'STUDENT' | 'INSTRUCTOR') {
     this.activeModule = module;
   }
 
@@ -115,6 +115,11 @@ export class LoginComponent implements AfterViewInit {
   }
 
   private redirectBasedOnRole(role: string) {
+    if (role === 'ADMIN') {
+      this.router.navigate(['/admin']);
+      return;
+    }
+
     if (role !== this.activeModule) {
       this.error = `This account belongs to a ${role.toLowerCase()}. Please select the correct portal to login.`;
       this.authService.logout(); // log them out since they are in the wrong portal
@@ -123,8 +128,6 @@ export class LoginComponent implements AfterViewInit {
     
     if (role === 'INSTRUCTOR') {
       this.router.navigate(['/instructor']);
-    } else if (role === 'ADMIN') {
-      this.router.navigate(['/admin']);
     } else {
       this.router.navigate(['/dashboard']);
     }

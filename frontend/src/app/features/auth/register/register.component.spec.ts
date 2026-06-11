@@ -162,10 +162,4 @@ describe('RegisterComponent', () => {
     expect(authServiceSpy.loginWithGoogle).toHaveBeenCalledWith('google-token');
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/instructor']);
   });
-
-  it('should set active module and update form role', () => {
-    component.setModule('ADMIN');
-    expect(component.activeModule).toEqual('ADMIN');
-    expect(component.registerForm.controls['role'].value).toEqual('ADMIN');
-  });
 });

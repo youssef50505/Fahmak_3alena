@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GamificationService } from '../../core/services/gamification.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Subscription } from 'rxjs';
+import { Subscription, switchMap, filter } from 'rxjs';
 import { GamificationProfile } from '../../core/models/gamification.model';
 
 @Component({
@@ -78,22 +78,20 @@ export class AchievementsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
-      if (user) {
-        const u: any = user.user || user;
-        const userId = u.id || user.userId;
-        if (userId) {
-          this.gamificationService.getUserProfile(userId).subscribe({
-            next: (profile) => {
-              this.profile = profile;
-              this.isLoading = false;
-            },
-            error: (err) => {
-              console.error('Failed to load gamification profile', err);
-              this.isLoading = false;
-            }
-          });
-        }
+    this.authSub = this.authService.currentUser$.pipe(
+      filter(user => !!user),
+      switchMap((user: any) => {
+        const userId = user.userId;
+        return this.gamificationService.getUserProfile(userId);
+      })
+    ).subscribe({
+      next: (profile) => {
+        this.profile = profile;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load gamification profile', err);
+        this.isLoading = false;
       }
     });
   }

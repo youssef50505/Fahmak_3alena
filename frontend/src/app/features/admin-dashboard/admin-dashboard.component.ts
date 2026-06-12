@@ -16,8 +16,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   dashboardData: AdminDashboardResponse | null = null;
   isLoading = true;
   userName = '';
-  proConversion = (Math.random() * 8 + 2).toFixed(1);
-  ltvAverage = Math.floor(Math.random() * 200) + 150;
   private authSub?: Subscription;
 
   constructor(
@@ -28,8 +26,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
-        const u = user.user || user;
-        this.userName = `${u.firstName} ${u.lastName}`;
+        this.userName = `${user.firstName} ${user.lastName}`;
       }
     });
 

@@ -22,7 +22,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
         return router.parseUrl('/login');
       }
 
-      const role: string | undefined = userObj.role || (userObj.user && userObj.user.role);
+      const role: string | undefined = userObj.role;
       
       if (!expectedRoles || (role && expectedRoles.includes(role))) {
         return true;

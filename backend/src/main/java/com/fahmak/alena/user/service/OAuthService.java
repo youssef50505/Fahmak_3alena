@@ -5,7 +5,6 @@ import com.fahmak.alena.user.entity.AuthProvider;
 import com.fahmak.alena.user.entity.Role;
 import com.fahmak.alena.user.entity.User;
 import com.fahmak.alena.user.repository.UserRepository;
-import com.fahmak.alena.user.security.JwtService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -31,7 +30,6 @@ import org.springframework.http.HttpMethod;
 public class OAuthService {
 
     private final UserRepository userRepository;
-    private final JwtService jwtService;
 
     @Value("${google.client.id:not-configured}")
     private String googleClientId;
@@ -59,11 +57,9 @@ public class OAuthService {
             
             user.setLastLoginDate(LocalDateTime.now());
             userRepository.save(user);
-            String jwt = jwtService.generateToken(user);
 
             return AuthResponse.builder()
                     .message("Login successful")
-                    .token(jwt)
                     .userId(user.getId())
                     .role(user.getRole().name())
                     .firstName(user.getFirstName())
@@ -114,11 +110,9 @@ public class OAuthService {
                 
                 user.setLastLoginDate(LocalDateTime.now());
                 userRepository.save(user);
-                String jwt = jwtService.generateToken(user);
                 
                 return AuthResponse.builder()
                         .message("Login successful")
-                        .token(jwt)
                         .userId(user.getId())
                         .role(user.getRole().name())
                         .firstName(user.getFirstName())

@@ -31,11 +31,13 @@ public class AdminService {
                 .count();
 
         SystemStatsDTO stats = SystemStatsDTO.builder()
-                .concurrentUsers((int) activeUsers > 0 ? (int) activeUsers : (int) (Math.random() * 500) + 120)
-                .systemUptime(99.90 + (Math.random() * 0.09))
-                .monthlyRevenue("$" + String.format("%,d", (int) (Math.random() * 50000) + 10000))
-                .userGrowthTrend(Math.round(Math.random() * 15.0 * 10.0) / 10.0)
-                .revenueGrowthTrend(Math.round(Math.random() * 20.0 * 10.0) / 10.0)
+                .concurrentUsers((int) activeUsers)
+                .systemUptime(99.99)
+                .monthlyRevenue("$0")
+                .userGrowthTrend(0.0)
+                .revenueGrowthTrend(0.0)
+                .proConversion(0.0)
+                .ltvAverage(0.0)
                 .build();
 
         return AdminDashboardResponse.builder()

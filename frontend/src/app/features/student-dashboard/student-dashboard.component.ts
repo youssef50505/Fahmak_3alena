@@ -6,7 +6,7 @@ import { Course } from '../../core/models/course.model';
 import { GamificationService } from '../../core/services/gamification.service';
 import { AuthService } from '../../core/services/auth.service';
 import { GamificationProfile } from '../../core/models/gamification.model';
-import { Subscription } from 'rxjs';
+import { Subscription, switchMap, filter } from 'rxjs';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -39,19 +39,16 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
-      if (user) {
-        const u: any = user.user || user;
-        this.userName = `${u.firstName} ${u.lastName}`;
-        const userId = u.id || user.userId;
-        
-        if (userId) {
-          this.gamificationService.getUserProfile(userId).subscribe({
-            next: (profile) => this.gamificationProfile = profile,
-            error: (err) => console.error('Failed to load gamification profile', err)
-          });
-        }
-      }
+    this.authSub = this.authService.currentUser$.pipe(
+      filter(user => !!user),
+      switchMap((user: any) => {
+        this.userName = `${user.firstName} ${user.lastName}`;
+        const userId = user.userId;
+        return this.gamificationService.getUserProfile(userId);
+      })
+    ).subscribe({
+      next: (profile) => this.gamificationProfile = profile,
+      error: (err) => console.error('Failed to load gamification profile', err)
     });
 
     this.courseService.getRecommendedCourses().subscribe({

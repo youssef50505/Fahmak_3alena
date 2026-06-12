@@ -4,6 +4,8 @@ export interface SystemStats {
   monthlyRevenue: string;
   userGrowthTrend: number;
   revenueGrowthTrend: number;
+  proConversion: number;
+  ltvAverage: number;
 }
 
 export interface UserManagement {
@@ -12,7 +14,7 @@ export interface UserManagement {
   email: string;
   role: string;
   status: string;
-  lastActivity: Date;
+  lastActivity: string;
 }
 
 export interface AdminDashboardResponse {

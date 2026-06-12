@@ -12,25 +12,11 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  const token = authService.getToken();
-  if (!token) {
+  if (!authService.isAuthenticated()) {
     return router.parseUrl('/login');
   }
 
-  // Check if token is expired by decoding the JWT payload
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const expirationMs = payload.exp * 1000;
-    if (Date.now() >= expirationMs) {
-      // Token expired — force logout and redirect
-      authService.logout();
-      return router.parseUrl('/login');
-    }
-  } catch (e) {
-    // Malformed token — force logout
-    authService.logout();
-    return router.parseUrl('/login');
-  }
-
+  // Token expiration is handled dynamically by error.interceptor.ts via HTTP 401s
+  // since tokens are stored securely in HttpOnly cookies and cannot be read here.
   return true;
 };

@@ -2,6 +2,10 @@ export interface InstructorStats {
   totalActiveStudents: number;
   avgCourseScore: number;
   completionRate: number;
+  pendingAssignments: number;
+  newDiscussions: number;
+  liveSession1Joined: number;
+  liveSession2Joined: number;
 }
 
 export interface StudentProgress {

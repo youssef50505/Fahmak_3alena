@@ -13,4 +13,8 @@ public class SystemStatsDTO {
     // Growth metrics
     private double userGrowthTrend; // e.g. +12.5
     private double revenueGrowthTrend; // e.g. +8.2
+    
+    // Additional metrics
+    private double proConversion;
+    private double ltvAverage;
 }

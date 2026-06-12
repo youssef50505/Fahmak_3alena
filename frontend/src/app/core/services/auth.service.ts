@@ -97,17 +97,6 @@ export class AuthService {
     return false;
   }
 
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        const userObj = JSON.parse(savedUser) as AuthResponse;
-        return userObj.token || null;
-      }
-    }
-    return null;
-  }
-
   refreshToken(): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe(
       tap((response: AuthResponse) => {

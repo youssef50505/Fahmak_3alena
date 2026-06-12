@@ -45,9 +45,8 @@ export class VirtualClassroomComponent implements OnInit, OnDestroy {
 
     this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
-        const u: any = user.user || user;
-        this.userID = String(u.id || user.userId || this.generateUserID());
-        this.userName = `${u.firstName} ${u.lastName}`;
+        this.userID = String(user.userId || this.generateUserID());
+        this.userName = `${user.firstName} ${user.lastName}`;
       } else {
         this.userID = this.generateUserID();
         this.userName = 'Guest';

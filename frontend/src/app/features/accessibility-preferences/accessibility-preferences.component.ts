@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
 import { FormsModule } from '@angular/forms';
 import { PreferencesService, UserPreferences } from '../../core/services/preferences.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-accessibility-preferences',
@@ -24,6 +25,8 @@ export class AccessibilityPreferencesComponent implements OnInit {
   public isSaving = false;
   public showSuccess = false;
 
+  private destroyRef = inject(DestroyRef);
+
   constructor(private preferencesService: PreferencesService) {}
 
   ngOnInit(): void {
@@ -33,11 +36,13 @@ export class AccessibilityPreferencesComponent implements OnInit {
       this.preferences = { ...current };
     } else {
       // Subscribe to changes if it hasn't loaded yet
-      this.preferencesService.preferences$.subscribe(prefs => {
-        if (prefs) {
-          this.preferences = { ...prefs };
-        }
-      });
+      this.preferencesService.preferences$
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(prefs => {
+          if (prefs) {
+            this.preferences = { ...prefs };
+          }
+        });
     }
   }
 

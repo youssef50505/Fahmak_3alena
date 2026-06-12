@@ -20,11 +20,7 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterVie
   dashboardData: InstructorDashboardResponse | null = null;
   isLoading = true;
   userName = '';
-  pendingAssignments = Math.floor(Math.random() * 30) + 5;
-  newDiscussions = Math.floor(Math.random() * 20) + 2;
   suspiciousSessions = 0;
-  liveSession1Joined = Math.floor(Math.random() * 100) + 20;
-  liveSession2Joined = Math.floor(Math.random() * 100) + 50;
   
   selectedStudent: StudentProgress | null = null;
 
@@ -44,8 +40,7 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterVie
   ngOnInit(): void {
     this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
-        const u = user.user || user;
-        this.userName = `${u.firstName} ${u.lastName}`;
+        this.userName = `${user.firstName} ${user.lastName}`;
       }
     });
 

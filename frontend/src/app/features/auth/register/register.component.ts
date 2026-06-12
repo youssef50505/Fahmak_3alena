@@ -69,7 +69,7 @@ export class RegisterComponent implements AfterViewInit {
     this.authService.loginWithGoogle(token, this.activeModule()).subscribe({
       next: (response) => {
         this.isLoading.set(false);
-        const role = response.user?.role || response.role;
+        const role = response.role;
         if (role === 'INSTRUCTOR') {
           this.router.navigate(['/instructor']);
         } else if (role === 'ADMIN') {
@@ -93,7 +93,7 @@ export class RegisterComponent implements AfterViewInit {
         this.authService.loginWithFacebook(response.authResponse.accessToken, this.activeModule()).subscribe({
           next: (res) => {
             this.isLoading.set(false);
-            const role = res.user?.role || res.role;
+            const role = res.role;
             if (role === 'INSTRUCTOR') {
               this.router.navigate(['/instructor']);
             } else if (role === 'ADMIN') {
@@ -133,9 +133,9 @@ export class RegisterComponent implements AfterViewInit {
       this.authService.register(userData).subscribe({
         next: (response) => {
           this.isLoading.set(false);
-          if (response && response.token) {
-            // authService already sets the user and token via tap
-            const role = response.user?.role || response.role;
+          // Since token is handled via cookies, we just check if response exists
+          if (response) {
+            const role = response.role;
             if (role === 'INSTRUCTOR') {
               this.router.navigate(['/instructor']);
             } else if (role === 'ADMIN') {

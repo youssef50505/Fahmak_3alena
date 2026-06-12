@@ -60,7 +60,7 @@ export class LoginComponent implements AfterViewInit {
     this.authService.loginWithGoogle(token, this.activeModule()).subscribe({
       next: (response) => {
         this.isLoading.set(false);
-        this.redirectBasedOnRole(response.user?.role || response.role);
+        this.redirectBasedOnRole(response.role);
       },
       error: (err) => {
         this.error.set(err.error?.error || 'Google login failed');
@@ -77,7 +77,7 @@ export class LoginComponent implements AfterViewInit {
         this.authService.loginWithFacebook(response.authResponse.accessToken, this.activeModule()).subscribe({
           next: (res) => {
             this.isLoading.set(false);
-            this.redirectBasedOnRole(res.user?.role || res.role);
+            this.redirectBasedOnRole(res.role);
           },
           error: (err) => {
             this.error.set(err.error?.error || 'Facebook login failed');
@@ -102,7 +102,7 @@ export class LoginComponent implements AfterViewInit {
       this.authService.login({ email: this.email(), password: this.password() }).subscribe({
         next: (response) => {
           this.isLoading.set(false);
-          this.redirectBasedOnRole(response.user?.role || response.role);
+          this.redirectBasedOnRole(response.role);
         },
         error: (err) => {
           if (err.status === 0) {

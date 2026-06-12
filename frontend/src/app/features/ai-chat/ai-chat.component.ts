@@ -32,9 +32,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get actual user name
     this.authSub = this.authService.currentUser$.subscribe((user: any) => {
-      if (user && user.user) {
-        this.userName = `${user.user.firstName} ${user.user.lastName}`;
-      } else if (user && user.firstName) {
+      if (user) {
         this.userName = `${user.firstName} ${user.lastName}`;
       }
     });

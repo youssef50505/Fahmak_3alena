@@ -47,8 +47,9 @@ public class AuthController {
             // Need to retrieve user to generate refresh token
             User user = userService.findByEmail(response.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
             String refreshToken = jwtService.generateRefreshToken(user);
+            String accessToken = jwtService.generateToken(user);
             
-            setCookies(responseObj, response.getToken(), refreshToken);
+            setCookies(responseObj, accessToken, refreshToken);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
@@ -70,8 +71,9 @@ public class AuthController {
             // Need to retrieve user to generate refresh token
             User user = userService.findByEmail(response.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
             String refreshToken = jwtService.generateRefreshToken(user);
+            String accessToken = jwtService.generateToken(user);
             
-            setCookies(responseObj, response.getToken(), refreshToken);
+            setCookies(responseObj, accessToken, refreshToken);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
@@ -96,7 +98,6 @@ public class AuthController {
 
             AuthResponse response = AuthResponse.builder()
                     .message("User registered successfully")
-                    .token(token)
                     .userId(user.getId())
                     .role(user.getRole().name())
                     .firstName(user.getFirstName())
@@ -125,7 +126,6 @@ public class AuthController {
 
             AuthResponse response = AuthResponse.builder()
                     .message("Login successful")
-                    .token(token)
                     .userId(user.getId())
                     .role(user.getRole().name())
                     .firstName(user.getFirstName())
@@ -169,7 +169,6 @@ public class AuthController {
         
         AuthResponse response = AuthResponse.builder()
                 .message("Token refreshed")
-                .token(newToken)
                 .userId(user.getId())
                 .role(user.getRole().name())
                 .firstName(user.getFirstName())

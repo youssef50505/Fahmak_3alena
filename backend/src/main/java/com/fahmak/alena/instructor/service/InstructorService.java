@@ -64,16 +64,19 @@ public class InstructorService {
                     .sum();
             avgScore = totalProgress / allEnrollments.size();
         } else {
-            // Fallback for demo purposes
-            totalStudents = (int) (Math.random() * 200) + 50;
-            avgScore = Math.random() * 20 + 75;
-            completionRate = Math.random() * 30 + 60;
+            totalStudents = 0;
+            avgScore = 0.0;
+            completionRate = 0.0;
         }
 
         InstructorStatsDTO stats = InstructorStatsDTO.builder()
                 .totalActiveStudents(totalStudents)
                 .avgCourseScore(Math.round(avgScore * 10.0) / 10.0)
                 .completionRate(Math.round(completionRate * 10.0) / 10.0)
+                .pendingAssignments(0)
+                .newDiscussions(0)
+                .liveSession1Joined(0)
+                .liveSession2Joined(0)
                 .build();
 
         return InstructorDashboardResponse.builder()

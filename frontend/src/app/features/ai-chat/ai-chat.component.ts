@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService, ChatMessage } from '../../core/services/ai.service';
@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
   `]
 })
 export class AiChatComponent implements OnInit, OnDestroy {
-  @ViewChild('chatScrollContainer') private chatScrollContainer!: ElementRef;
+  private chatScrollContainer = viewChild<ElementRef>('chatScrollContainer');
   
   messages: ChatMessage[] = [];
   newMessageText: string = '';
@@ -31,7 +31,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Get actual user name
-    this.authSub = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user && user.user) {
         this.userName = `${user.user.firstName} ${user.user.lastName}`;
       } else if (user && user.firstName) {
@@ -75,8 +75,8 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
   private scrollToBottom(): void {
     try {
-      if (this.chatScrollContainer) {
-        this.chatScrollContainer.nativeElement.scrollTop = this.chatScrollContainer.nativeElement.scrollHeight;
+      if (this.chatScrollContainer()) {
+        this.chatScrollContainer()!.nativeElement.scrollTop = this.chatScrollContainer()!.nativeElement.scrollHeight;
       }
     } catch(err) { }
   }

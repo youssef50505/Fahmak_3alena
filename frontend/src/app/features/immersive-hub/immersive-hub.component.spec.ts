@@ -1,8 +1,9 @@
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ImmersiveHubComponent } from './immersive-hub.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ImmersiveHubComponent', () => {
   let component: ImmersiveHubComponent;
@@ -10,8 +11,9 @@ describe('ImmersiveHubComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ImmersiveHubComponent, HttpClientTestingModule, RouterTestingModule]
-    })
+    imports: [ImmersiveHubComponent, RouterTestingModule],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
     .compileComponents();
     
     fixture = TestBed.createComponent(ImmersiveHubComponent);

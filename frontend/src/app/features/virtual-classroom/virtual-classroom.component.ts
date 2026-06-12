@@ -1,19 +1,18 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, ElementRef, viewChild, effect } from '@angular/core';
+
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { Subscription } from 'rxjs';
-import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 
 @Component({
   selector: 'app-virtual-classroom',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './virtual-classroom.component.html',
   styleUrl: './virtual-classroom.component.css'
 })
-export class VirtualClassroomComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('zegoContainer', { static: false }) zegoContainer!: ElementRef;
+export class VirtualClassroomComponent implements OnInit, OnDestroy {
+  zegoContainer = viewChild<ElementRef>('zegoContainer');
 
   private readonly APP_ID = 52259796;
   private readonly SERVER_SECRET = '0bdbadc00eaebeb3afaab431275e019c';
@@ -29,7 +28,13 @@ export class VirtualClassroomComponent implements OnInit, AfterViewInit, OnDestr
   constructor(
     private authService: AuthService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    effect(() => {
+      if (this.zegoContainer()) {
+        this.joinRoom();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.routeSub = this.route.queryParams.subscribe(params => {
@@ -38,7 +43,7 @@ export class VirtualClassroomComponent implements OnInit, AfterViewInit, OnDestr
       }
     });
 
-    this.authSub = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u: any = user.user || user;
         this.userID = String(u.id || user.userId || this.generateUserID());
@@ -50,10 +55,6 @@ export class VirtualClassroomComponent implements OnInit, AfterViewInit, OnDestr
     });
   }
 
-  ngAfterViewInit(): void {
-    this.joinRoom();
-  }
-
   ngOnDestroy(): void {
     if (this.zegoInstance) {
       this.zegoInstance.destroy();
@@ -62,10 +63,12 @@ export class VirtualClassroomComponent implements OnInit, AfterViewInit, OnDestr
     this.routeSub?.unsubscribe();
   }
 
-  private joinRoom(): void {
-    if (!this.zegoContainer) return;
+  private async joinRoom(): Promise<void> {
+    if (!this.zegoContainer()) return;
 
     try {
+      const { ZegoUIKitPrebuilt } = await import('@zegocloud/zego-uikit-prebuilt');
+
       const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
         this.APP_ID,
         this.SERVER_SECRET,
@@ -77,7 +80,7 @@ export class VirtualClassroomComponent implements OnInit, AfterViewInit, OnDestr
       this.zegoInstance = ZegoUIKitPrebuilt.create(kitToken);
 
       this.zegoInstance.joinRoom({
-        container: this.zegoContainer.nativeElement,
+        container: this.zegoContainer()!.nativeElement,
         scenario: {
           mode: ZegoUIKitPrebuilt.VideoConference
         },

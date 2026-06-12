@@ -1,20 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { LoginRequest, RegisterRequest, AuthResponse } from '../models/auth.model';
+import { AuthStore } from '../store/auth.store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
-  private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private authStore = inject(AuthStore);
+  public currentUser$ = toObservable(this.authStore.user);
 
   constructor(private http: HttpClient) {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      this.currentUserSubject.next(JSON.parse(savedUser));
+      this.authStore.setUser(JSON.parse(savedUser));
     }
   }
 
@@ -23,7 +25,7 @@ export class AuthService {
       tap((response: AuthResponse) => {
         if (response) {
           localStorage.setItem('user', JSON.stringify(response));
-          this.currentUserSubject.next(response);
+          this.authStore.setUser(response);
         }
       })
     );
@@ -34,7 +36,7 @@ export class AuthService {
       tap((response: AuthResponse) => {
         if (response) {
           localStorage.setItem('user', JSON.stringify(response));
-          this.currentUserSubject.next(response);
+          this.authStore.setUser(response);
         }
       })
     );
@@ -45,7 +47,7 @@ export class AuthService {
       tap((response: AuthResponse) => {
         if (response) {
           localStorage.setItem('user', JSON.stringify(response));
-          this.currentUserSubject.next(response);
+          this.authStore.setUser(response);
         }
       })
     );
@@ -56,7 +58,7 @@ export class AuthService {
       tap((response: AuthResponse) => {
         if (response) {
           localStorage.setItem('user', JSON.stringify(response));
-          this.currentUserSubject.next(response);
+          this.authStore.setUser(response);
         }
       })
     );
@@ -71,7 +73,7 @@ export class AuthService {
 
   clearLocalSession() {
     localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
+    this.authStore.logout();
   }
 
   isAuthenticated(): boolean {
@@ -92,7 +94,7 @@ export class AuthService {
       tap((response: AuthResponse) => {
         if (response) {
           localStorage.setItem('user', JSON.stringify(response));
-          this.currentUserSubject.next(response);
+          this.authStore.setUser(response);
         }
       })
     );

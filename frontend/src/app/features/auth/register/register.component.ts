@@ -1,6 +1,6 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, signal, computed } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { OAuthHelper } from '../../../core/services/oauth.helper';
@@ -9,36 +9,36 @@ import gsap from 'gsap';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, TitleCasePipe],
+  imports: [CommonModule, FormsModule, RouterModule, TitleCasePipe],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements AfterViewInit {
-  registerForm: FormGroup;
-  error: string = '';
-  isLoading: boolean = false;
-  activeModule: 'STUDENT' | 'INSTRUCTOR' = 'STUDENT';
+  firstName = signal('');
+  lastName = signal('');
+  email = signal('');
+  password = signal('');
+  agreeTerms = signal(false);
+  
+  error = signal('');
+  isLoading = signal(false);
+  activeModule = signal<'STUDENT' | 'INSTRUCTOR'>('STUDENT');
+
+  isFormValid = computed(() => {
+    return this.firstName().length > 0 &&
+           this.lastName().length > 0 &&
+           this.email().includes('@') &&
+           this.email().length > 3 &&
+           this.password().length >= 8 &&
+           this.agreeTerms();
+  });
 
   constructor(
-    private fb: FormBuilder,
     private authService: AuthService,
     private oauthHelper: OAuthHelper,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    this.registerForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [
-        Validators.required, 
-        Validators.minLength(8),
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
-      ]],
-      role: ['STUDENT', [Validators.required]],
-      agreeTerms: [false, [Validators.requiredTrue]]
-    });
-  }
+  ) {}
 
   ngAfterViewInit() {
     // GSAP Entrance Animations
@@ -61,11 +61,11 @@ export class RegisterComponent implements AfterViewInit {
   }
 
   handleGoogleLogin(token: string) {
-    this.isLoading = true;
-    this.error = '';
-    this.authService.loginWithGoogle(token, this.activeModule).subscribe({
+    this.isLoading.set(true);
+    this.error.set('');
+    this.authService.loginWithGoogle(token, this.activeModule()).subscribe({
       next: (response) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         const role = response.user?.role || response.role;
         if (role === 'INSTRUCTOR') {
           this.router.navigate(['/instructor']);
@@ -76,8 +76,8 @@ export class RegisterComponent implements AfterViewInit {
         }
       },
       error: (err) => {
-        this.error = err.error?.error || 'Google login failed';
-        this.isLoading = false;
+        this.error.set(err.error?.error || 'Google login failed');
+        this.isLoading.set(false);
       }
     });
   }
@@ -85,11 +85,11 @@ export class RegisterComponent implements AfterViewInit {
   handleFacebookLogin() {
     this.oauthHelper.loginWithFacebook((response) => {
       if (response && response.authResponse) {
-        this.isLoading = true;
-        this.error = '';
-        this.authService.loginWithFacebook(response.authResponse.accessToken, this.activeModule).subscribe({
+        this.isLoading.set(true);
+        this.error.set('');
+        this.authService.loginWithFacebook(response.authResponse.accessToken, this.activeModule()).subscribe({
           next: (res) => {
-            this.isLoading = false;
+            this.isLoading.set(false);
             const role = res.user?.role || res.role;
             if (role === 'INSTRUCTOR') {
               this.router.navigate(['/instructor']);
@@ -100,31 +100,36 @@ export class RegisterComponent implements AfterViewInit {
             }
           },
           error: (err) => {
-            this.error = err.error?.error || 'Facebook login failed';
-            this.isLoading = false;
+            this.error.set(err.error?.error || 'Facebook login failed');
+            this.isLoading.set(false);
           }
         });
       } else {
-        this.error = 'Facebook login was cancelled or failed';
+        this.error.set('Facebook login was cancelled or failed');
       }
     });
   }
 
   setModule(module: 'STUDENT' | 'INSTRUCTOR') {
-    this.activeModule = module;
-    this.registerForm.patchValue({ role: module });
+    this.activeModule.set(module);
   }
 
   onSubmit() {
-    if (this.registerForm.valid) {
-      this.isLoading = true;
-      this.error = '';
+    if (this.isFormValid()) {
+      this.isLoading.set(true);
+      this.error.set('');
 
-      const { agreeTerms, ...userData } = this.registerForm.value;
+      const userData = {
+        firstName: this.firstName(),
+        lastName: this.lastName(),
+        email: this.email(),
+        password: this.password(),
+        role: this.activeModule()
+      };
 
       this.authService.register(userData).subscribe({
         next: (response) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           if (response && response.token) {
             // authService already sets the user and token via tap
             const role = response.user?.role || response.role;
@@ -143,15 +148,13 @@ export class RegisterComponent implements AfterViewInit {
         },
         error: (err) => {
           if (err.status === 0) {
-            this.error = 'Unable to connect to the server. Is the backend running?';
+            this.error.set('Unable to connect to the server. Is the backend running?');
           } else {
-            this.error = err.error?.error || err.error?.message || 'Registration failed. Please try again.';
+            this.error.set(err.error?.error || err.error?.message || 'Registration failed. Please try again.');
           }
-          this.isLoading = false;
+          this.isLoading.set(false);
         }
       });
-    } else {
-      this.registerForm.markAllAsTouched();
     }
   }
 }

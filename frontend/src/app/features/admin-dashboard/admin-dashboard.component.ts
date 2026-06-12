@@ -26,7 +26,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authSub = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u = user.user || user;
         this.userName = `${u.firstName} ${u.lastName}`;

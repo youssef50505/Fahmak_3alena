@@ -1,17 +1,17 @@
-import { Component, EventEmitter, Input, Output, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Output, OnInit, AfterViewInit, ElementRef, ViewChild, input } from '@angular/core';
+
 import { StudentProgress } from '../../../../core/models/instructor.model';
 import gsap from 'gsap';
 
 @Component({
   selector: 'app-student-profile-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './student-profile-modal.component.html',
   styleUrl: './student-profile-modal.component.css'
 })
 export class StudentProfileModalComponent implements OnInit, AfterViewInit {
-  @Input() student!: StudentProgress;
+  readonly student = input.required<StudentProgress>();
   @Output() close = new EventEmitter<void>();
 
   @ViewChild('modalBackdrop') modalBackdrop!: ElementRef;

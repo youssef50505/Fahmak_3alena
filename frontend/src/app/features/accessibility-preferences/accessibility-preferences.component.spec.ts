@@ -1,8 +1,9 @@
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AccessibilityPreferencesComponent } from './accessibility-preferences.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AccessibilityPreferencesComponent', () => {
   let component: AccessibilityPreferencesComponent;
@@ -10,8 +11,9 @@ describe('AccessibilityPreferencesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AccessibilityPreferencesComponent, HttpClientTestingModule, RouterTestingModule]
-    })
+    imports: [AccessibilityPreferencesComponent, RouterTestingModule],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
     .compileComponents();
     
     fixture = TestBed.createComponent(AccessibilityPreferencesComponent);

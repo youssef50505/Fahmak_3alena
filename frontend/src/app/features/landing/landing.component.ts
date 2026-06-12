@@ -1,17 +1,16 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import '@splinetool/viewer';
 
 gsap.registerPlugin(ScrollTrigger);
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -1,6 +1,6 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, viewChild, AfterViewInit, signal, computed } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { CourseService } from '../../core/services/course.service';
 import { Course, CourseRequest } from '../../core/models/course.model';
 import { gsap } from 'gsap';
@@ -8,34 +8,39 @@ import { gsap } from 'gsap';
 @Component({
   selector: 'app-course-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CurrencyPipe],
+  imports: [CommonModule, FormsModule, CurrencyPipe],
   templateUrl: './course-management.component.html',
   styleUrls: ['./course-management.component.css']
 })
 export class CourseManagementComponent implements OnInit, AfterViewInit {
-  @ViewChild('coursesGrid', { static: false }) coursesGrid!: ElementRef;
-  @ViewChild('modalOverlay', { static: false }) modalOverlay!: ElementRef;
-  @ViewChild('modalContent', { static: false }) modalContent!: ElementRef;
+  coursesGrid = viewChild<ElementRef>('coursesGrid');
+  modalOverlay = viewChild<ElementRef>('modalOverlay');
+  modalContent = viewChild<ElementRef>('modalContent');
 
   courses: Course[] = [];
   isLoading = true;
   isModalOpen = false;
   isSaving = false;
   editingCourseId: number | null = null;
-  courseForm: FormGroup;
+
+  title = signal('');
+  description = signal('');
+  category = signal('');
+  difficultyLevel = signal('');
+  price = signal(0);
+
+  isFormValid = computed(() => {
+    return this.title().length >= 5 &&
+           this.description().length >= 20 &&
+           this.category() !== '' &&
+           this.difficultyLevel() !== '' &&
+           this.price() >= 0;
+  });
 
   categories = ['Programming', 'Design', 'Business', 'Marketing', 'Data Science', 'Other'];
   difficulties = ['Beginner', 'Intermediate', 'Advanced'];
 
-  constructor(private courseService: CourseService, private fb: FormBuilder) {
-    this.courseForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(5)]],
-      description: ['', [Validators.required, Validators.minLength(20)]],
-      category: ['', Validators.required],
-      difficultyLevel: ['', Validators.required],
-      price: [0, [Validators.required, Validators.min(0)]]
-    });
-  }
+  constructor(private courseService: CourseService) {}
 
   ngOnInit(): void {
     this.loadCourses();
@@ -63,8 +68,8 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
 
   animateGrid(): void {
     setTimeout(() => {
-      if (this.coursesGrid) {
-        gsap.from(this.coursesGrid.nativeElement.children, {
+      if (this.coursesGrid()) {
+        gsap.from(this.coursesGrid()!.nativeElement.children, {
           y: 40,
           opacity: 0,
           duration: 0.6,
@@ -77,27 +82,29 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
 
   openCreateModal(): void {
     this.editingCourseId = null;
-    this.courseForm.reset({ price: 0 });
+    this.title.set('');
+    this.description.set('');
+    this.category.set('');
+    this.difficultyLevel.set('');
+    this.price.set(0);
     this.showModal();
   }
 
   openEditModal(course: Course): void {
     this.editingCourseId = course.id;
-    this.courseForm.patchValue({
-      title: course.title,
-      description: course.description,
-      category: course.category,
-      difficultyLevel: course.difficultyLevel,
-      price: course.price
-    });
+    this.title.set(course.title);
+    this.description.set(course.description);
+    this.category.set(course.category);
+    this.difficultyLevel.set(course.difficultyLevel);
+    this.price.set(course.price);
     this.showModal();
   }
 
   showModal(): void {
     this.isModalOpen = true;
     setTimeout(() => {
-      gsap.to(this.modalOverlay.nativeElement, { opacity: 1, duration: 0.3 });
-      gsap.fromTo(this.modalContent.nativeElement,
+      gsap.to(this.modalOverlay()!.nativeElement, { opacity: 1, duration: 0.3 });
+      gsap.fromTo(this.modalContent()!.nativeElement,
         { y: -50, opacity: 0, scale: 0.95 },
         { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }
       );
@@ -105,8 +112,8 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
   }
 
   closeModal(): void {
-    gsap.to(this.modalOverlay.nativeElement, { opacity: 0, duration: 0.3 });
-    gsap.to(this.modalContent.nativeElement, {
+    gsap.to(this.modalOverlay()!.nativeElement, { opacity: 0, duration: 0.3 });
+    gsap.to(this.modalContent()!.nativeElement, {
       y: 30, opacity: 0, scale: 0.95, duration: 0.3, ease: 'power2.in',
       onComplete: () => {
         this.isModalOpen = false;
@@ -115,10 +122,16 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
-    if (this.courseForm.invalid) return;
+    if (!this.isFormValid()) return;
 
     this.isSaving = true;
-    const request: CourseRequest = this.courseForm.value;
+    const request: CourseRequest = {
+      title: this.title(),
+      description: this.description(),
+      category: this.category(),
+      difficultyLevel: this.difficultyLevel(),
+      price: this.price()
+    };
 
     if (this.editingCourseId) {
       this.courseService.updateCourse(this.editingCourseId, request).subscribe({

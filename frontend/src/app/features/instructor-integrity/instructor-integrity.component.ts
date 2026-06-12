@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, viewChild, AfterViewInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { InstructorService } from '../../core/services/instructor.service';
 import { IntegrityReportResponse } from '../../core/models/instructor.model';
@@ -12,8 +12,8 @@ import { gsap } from 'gsap';
   styleUrls: ['./instructor-integrity.component.css']
 })
 export class InstructorIntegrityComponent implements OnInit, AfterViewInit {
-  @ViewChild('reportsContainer', { static: false }) reportsContainer!: ElementRef;
-  @ViewChild('pageHeader', { static: false }) pageHeader!: ElementRef;
+  reportsContainer = viewChild<ElementRef>('reportsContainer');
+  pageHeader = viewChild<ElementRef>('pageHeader');
 
   flaggedSessions: IntegrityReportResponse[] = [];
   isLoading = true;
@@ -25,8 +25,8 @@ export class InstructorIntegrityComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.pageHeader) {
-      gsap.from(this.pageHeader.nativeElement, {
+    if (this.pageHeader()) {
+      gsap.from(this.pageHeader()!.nativeElement, {
         y: -30,
         opacity: 0,
         duration: 0.8,
@@ -51,8 +51,8 @@ export class InstructorIntegrityComponent implements OnInit, AfterViewInit {
 
   animateReports(): void {
     setTimeout(() => {
-      if (this.reportsContainer) {
-        gsap.from(this.reportsContainer.nativeElement.children, {
+      if (this.reportsContainer()) {
+        gsap.from(this.reportsContainer()!.nativeElement.children, {
           y: 30,
           opacity: 0,
           duration: 0.6,

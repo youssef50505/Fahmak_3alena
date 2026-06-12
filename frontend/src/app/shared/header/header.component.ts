@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit {
       this.unreadCount = count;
     });
 
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u: any = user.user || user;
         this.userName = `${u.firstName} ${u.lastName}`;

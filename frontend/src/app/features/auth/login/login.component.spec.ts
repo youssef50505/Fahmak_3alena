@@ -1,5 +1,5 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -10,16 +10,26 @@ import { OAuthHelper } from '../../../core/services/oauth.helper';
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let oauthHelperSpy: jasmine.SpyObj<OAuthHelper>;
+  let authServiceSpy: any;
+  let oauthHelperSpy: any;
   let router: Router;
 
   beforeEach(async () => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['login', 'loginWithGoogle', 'logout']);
-    oauthHelperSpy = jasmine.createSpyObj('OAuthHelper', ['initializeGoogleSignIn', 'renderGoogleButton', 'initializeFacebookSignIn', 'loginWithFacebook']);
+    authServiceSpy = {
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      loginWithFacebook: vi.fn()
+    };
+    oauthHelperSpy = {
+      initializeGoogleSignIn: vi.fn(),
+      renderGoogleButton: vi.fn(),
+      initializeFacebookSignIn: vi.fn(),
+      loginWithFacebook: vi.fn()
+    };
 
     await TestBed.configureTestingModule({
-      imports: [LoginComponent, ReactiveFormsModule, RouterTestingModule],
+      imports: [LoginComponent, FormsModule, RouterTestingModule],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
         { provide: OAuthHelper, useValue: oauthHelperSpy },
@@ -30,7 +40,7 @@ describe('LoginComponent', () => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
-    spyOn(router, 'navigate');
+    vi.spyOn(router, 'navigate');
     fixture.detectChanges();
   });
 
@@ -38,27 +48,25 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize form with empty values', () => {
-    expect(component.loginForm.value).toEqual({ email: '', password: '' });
-    expect(component.loginForm.valid).toBeFalse();
+  it('should initialize with empty values', () => {
+    expect(component.email()).toBe('');
+    expect(component.password()).toBe('');
+    expect(component.isFormValid()).toBe(false);
   });
 
   it('should invalidate form if email is missing or malformed', () => {
-    let email = component.loginForm.controls['email'];
-    expect(email.valid).toBeFalsy();
-    expect(email.errors?.['required']).toBeTruthy();
-    
-    email.setValue('invalid-email');
-    expect(email.errors?.['email']).toBeTruthy();
+    component.email.set('invalid-email');
+    component.password.set('password123');
+    expect(component.isFormValid()).toBe(false);
 
-    email.setValue('test@test.com');
-    expect(email.errors).toBeNull();
+    component.email.set('test@test.com');
+    expect(component.isFormValid()).toBe(true);
   });
 
   it('should validate form if fields are correct', () => {
-    component.loginForm.controls['email'].setValue('test@test.com');
-    component.loginForm.controls['password'].setValue('password123');
-    expect(component.loginForm.valid).toBeTrue();
+    component.email.set('test@test.com');
+    component.password.set('password123');
+    expect(component.isFormValid()).toBe(true);
   });
 
   it('should not submit if form is invalid', () => {
@@ -67,37 +75,37 @@ describe('LoginComponent', () => {
   });
 
   it('should show loading and call login on valid submit', () => {
-    component.loginForm.controls['email'].setValue('test@test.com');
-    component.loginForm.controls['password'].setValue('password123');
-    authServiceSpy.login.and.returnValue(of({ token: '123', user: { role: 'STUDENT' } } as any));
+    component.email.set('test@test.com');
+    component.password.set('password123');
+    authServiceSpy.login.mockReturnValue(of({ token: '123', user: { role: 'STUDENT' } }));
 
     component.onSubmit();
 
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBe(false);
     expect(authServiceSpy.login).toHaveBeenCalledWith({ email: 'test@test.com', password: 'password123' });
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 
   it('should handle backend connection error (status 0)', () => {
-    component.loginForm.controls['email'].setValue('test@test.com');
-    component.loginForm.controls['password'].setValue('password123');
-    authServiceSpy.login.and.returnValue(throwError(() => ({ status: 0 })));
+    component.email.set('test@test.com');
+    component.password.set('password123');
+    authServiceSpy.login.mockReturnValue(throwError(() => ({ status: 0 })));
 
     component.onSubmit();
 
-    expect(component.error).toEqual('Unable to connect to the server. Is the backend running?');
-    expect(component.isLoading).toBeFalse();
+    expect(component.error()).toEqual('Unable to connect to the server. Is the backend running?');
+    expect(component.isLoading()).toBe(false);
   });
 
   it('should handle invalid credentials error', () => {
-    component.loginForm.controls['email'].setValue('test@test.com');
-    component.loginForm.controls['password'].setValue('password123');
-    authServiceSpy.login.and.returnValue(throwError(() => ({ error: { message: 'Invalid credentials' } })));
+    component.email.set('test@test.com');
+    component.password.set('password123');
+    authServiceSpy.login.mockReturnValue(throwError(() => ({ error: { message: 'Invalid credentials' } })));
 
     component.onSubmit();
 
-    expect(component.error).toEqual('Invalid credentials');
-    expect(component.isLoading).toBeFalse();
+    expect(component.error()).toEqual('Invalid credentials');
+    expect(component.isLoading()).toBe(false);
   });
 
   it('should initialize google sign in after view init', () => {
@@ -107,8 +115,8 @@ describe('LoginComponent', () => {
   });
 
   it('should handle google login successfully', () => {
-    component.activeModule = 'INSTRUCTOR';
-    authServiceSpy.loginWithGoogle.and.returnValue(of({ token: '123', user: { role: 'INSTRUCTOR' } } as any));
+    component.activeModule.set('INSTRUCTOR');
+    authServiceSpy.loginWithGoogle.mockReturnValue(of({ token: '123', user: { role: 'INSTRUCTOR' } }));
     
     component.handleGoogleLogin('google-token');
 
@@ -117,13 +125,11 @@ describe('LoginComponent', () => {
   });
 
   it('should handle admin routing', () => {
-    component.loginForm.controls['email'].setValue('test@test.com');
-    component.loginForm.controls['password'].setValue('password123');
-    authServiceSpy.login.and.returnValue(of({ token: '123', user: { role: 'ADMIN' } } as any));
+    component.email.set('test@test.com');
+    component.password.set('password123');
+    authServiceSpy.login.mockReturnValue(of({ token: '123', user: { role: 'ADMIN' } }));
 
     component.onSubmit();
     expect(router.navigate).toHaveBeenCalledWith(['/admin']);
   });
-  
-
 });

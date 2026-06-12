@@ -11,60 +11,70 @@
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="loading-state">
-    <div class="spinner"></div>
-    <p>Analyzing sessions...</p>
-  </div>
-
-  <div *ngIf="!isLoading && flaggedSessions.length === 0" class="empty-state">
-    <i class="fa-regular fa-face-smile-beam"></i>
-    <h3>All Clear!</h3>
-    <p>No flagged sessions or suspicious activities detected in your courses.</p>
-  </div>
-
-  <div *ngIf="!isLoading && flaggedSessions.length > 0" class="reports-grid" #reportsContainer>
-    <div class="report-card" *ngFor="let report of flaggedSessions">
-      <div class="report-header">
-        <div class="student-info">
-          <h3>{{ report.studentName }}</h3>
-          <span>{{ report.studentEmail }}</span>
-        </div>
-        <div class="verdict-badge" [ngClass]="getVerdictBadgeClass(report.verdict)">
-          {{ report.verdict }}
-        </div>
-      </div>
-
-      <div class="quiz-info">
-        <i class="fa-solid fa-file-signature"></i>
-        <span>{{ report.quizTitle }}</span>
-      </div>
-
-      <div class="timing-info">
-        <small><i class="fa-regular fa-clock"></i> Started: {{ report.startedAt | date:'medium' }}</small>
-        <small><i class="fa-solid fa-flag-checkered"></i> Completed: {{ report.completedAt ? (report.completedAt | date:'medium') : 'In Progress' }}</small>
-      </div>
-
-      <div class="events-section">
-        <h4>Detected Events ({{ report.cheatEvents.length }})</h4>
-        <ul class="event-list">
-          <li *ngFor="let event of report.cheatEvents" class="event-item">
-            <i class="fa-solid" [ngClass]="getEventIcon(event.eventType)"></i>
-            <div class="event-details">
-              <span class="event-type">{{ event.eventType | titlecase }}</span>
-              <span class="event-time">{{ event.timestamp | date:'shortTime' }}</span>
-              <p class="event-meta" *ngIf="event.metadata">{{ event.metadata }}</p>
-            </div>
-          </li>
-          <li *ngIf="report.cheatEvents.length === 0" class="no-events">
-            No specific events recorded.
-          </li>
-        </ul>
-      </div>
-
-      <div class="report-actions">
-        <button class="btn-review">Review Session</button>
-        <button class="btn-dismiss">Dismiss</button>
-      </div>
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Analyzing sessions...</p>
     </div>
-  </div>
+  }
+
+  @if (!isLoading && flaggedSessions.length === 0) {
+    <div class="empty-state">
+      <i class="fa-regular fa-face-smile-beam"></i>
+      <h3>All Clear!</h3>
+      <p>No flagged sessions or suspicious activities detected in your courses.</p>
+    </div>
+  }
+
+  @if (!isLoading && flaggedSessions.length > 0) {
+    <div class="reports-grid" #reportsContainer>
+      @for (report of flaggedSessions; track report) {
+        <div class="report-card">
+          <div class="report-header">
+            <div class="student-info">
+              <h3>{{ report.studentName }}</h3>
+              <span>{{ report.studentEmail }}</span>
+            </div>
+            <div class="verdict-badge" [ngClass]="getVerdictBadgeClass(report.verdict)">
+              {{ report.verdict }}
+            </div>
+          </div>
+          <div class="quiz-info">
+            <i class="fa-solid fa-file-signature"></i>
+            <span>{{ report.quizTitle }}</span>
+          </div>
+          <div class="timing-info">
+            <small><i class="fa-regular fa-clock"></i> Started: {{ report.startedAt | date:'medium' }}</small>
+            <small><i class="fa-solid fa-flag-checkered"></i> Completed: {{ report.completedAt ? (report.completedAt | date:'medium') : 'In Progress' }}</small>
+          </div>
+          <div class="events-section">
+            <h4>Detected Events ({{ report.cheatEvents.length }})</h4>
+            <ul class="event-list">
+              @for (event of report.cheatEvents; track event) {
+                <li class="event-item">
+                  <i class="fa-solid" [ngClass]="getEventIcon(event.eventType)"></i>
+                  <div class="event-details">
+                    <span class="event-type">{{ event.eventType | titlecase }}</span>
+                    <span class="event-time">{{ event.timestamp | date:'shortTime' }}</span>
+                    @if (event.metadata) {
+                      <p class="event-meta">{{ event.metadata }}</p>
+                    }
+                  </div>
+                </li>
+              }
+              @if (report.cheatEvents.length === 0) {
+                <li class="no-events">
+                  No specific events recorded.
+                </li>
+              }
+            </ul>
+          </div>
+          <div class="report-actions">
+            <button class="btn-review">Review Session</button>
+            <button class="btn-dismiss">Dismiss</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
 </div>

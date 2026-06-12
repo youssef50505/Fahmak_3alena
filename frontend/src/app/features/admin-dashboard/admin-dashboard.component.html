@@ -43,7 +43,7 @@
         <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full border border-emerald-200 animate-pulse">Live</span>
       </div>
       <p class="text-sm text-gray-500">System Uptime</p>
-      <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ dashboardData?.systemStats?.systemUptime | number:'1.2-2' || '...' }}%</p>
+      <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ (dashboardData?.systemStats?.systemUptime | number:'1.2-2') || '...' }}%</p>
       <p class="text-sm text-gray-500 mt-2">Stable</p>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
@@ -190,36 +190,38 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         @for (user of dashboardData?.users; track user.id) {
-        <tr class="hover:bg-gray-50 transition-colors">
-          <td class="px-6 py-4"><span class="text-sm text-brand-600 font-medium">{{ user.id }}</span></td>
-          <td class="px-6 py-4">
-            <p class="text-sm font-semibold text-gray-900">{{ user.name }}</p>
-            <p class="text-xs text-gray-500">{{ user.email }}</p>
-          </td>
-          <td class="px-6 py-4">
-            <span class="px-2.5 py-1 text-xs font-bold rounded-full border"
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4"><span class="text-sm text-brand-600 font-medium">{{ user.id }}</span></td>
+            <td class="px-6 py-4">
+              <p class="text-sm font-semibold text-gray-900">{{ user.name }}</p>
+              <p class="text-xs text-gray-500">{{ user.email }}</p>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 text-xs font-bold rounded-full border"
                   [ngClass]="{
                     'bg-brand-50 text-brand-600 border-brand-200': user.role === 'STUDENT',
                     'bg-amber-50 text-amber-600 border-amber-200': user.role === 'INSTRUCTOR',
                     'bg-emerald-50 text-emerald-600 border-emerald-200': user.role === 'ADMIN'
                   }">
-              {{ user.role | titlecase }}
-            </span>
-          </td>
-          <td class="px-6 py-4">
-            <span class="text-sm flex items-center gap-1"
-                  [ngClass]="user.status === 'Active' ? 'text-gray-700' : 'text-red-600'">
-              <span *ngIf="user.status !== 'Active'" class="w-2 h-2 rounded-full bg-red-500"></span>
-              {{ user.status }}
-            </span>
-          </td>
-          <td class="px-6 py-4"><span class="text-sm text-gray-500">{{ user.lastActivity | date:'short' }}</span></td>
-          <td class="px-6 py-4"><button class="text-gray-400 hover:text-gray-600 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg></button></td>
-        </tr>
-        } @empty {
-        <tr>
-          <td colspan="6" class="px-6 py-8 text-center text-gray-500">No users found in the system.</td>
-        </tr>
+                {{ user.role | titlecase }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-sm flex items-center gap-1"
+                [ngClass]="user.status === 'Active' ? 'text-gray-700' : 'text-red-600'">
+                @if (user.status !== 'Active') {
+                  <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                }
+                {{ user.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4"><span class="text-sm text-gray-500">{{ user.lastActivity | date:'short' }}</span></td>
+            <td class="px-6 py-4"><button class="text-gray-400 hover:text-gray-600 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg></button></td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">No users found in the system.</td>
+          </tr>
         }
       </tbody>
     </table>

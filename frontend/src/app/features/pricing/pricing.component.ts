@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { SubscriptionService } from '../../core/services/subscription.service';
 
 @Component({
   selector: 'app-pricing',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './pricing.component.html'
 })
 export class PricingComponent {

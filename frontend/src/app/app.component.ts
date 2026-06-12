@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
 import { HeaderComponent } from './shared/header/header.component';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from './core/services/auth.service';
 import { PreferencesService } from './core/services/preferences.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent, HeaderComponent, CommonModule],
+  imports: [RouterOutlet, SidebarComponent, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -21,7 +21,7 @@ export class AppComponent {
     private authService: AuthService,
     private preferencesService: PreferencesService
   ) {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         this.preferencesService.loadPreferences();
       }

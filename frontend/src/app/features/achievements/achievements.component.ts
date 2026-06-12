@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { GamificationService } from '../../core/services/gamification.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -9,7 +9,7 @@ import { GamificationProfile } from '../../core/models/gamification.model';
 @Component({
   selector: 'app-achievements',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   template: `
     <div class="max-w-7xl mx-auto space-y-6 pb-12 animate-fade-in">
       <div class="flex justify-between items-center mb-6">
@@ -78,7 +78,7 @@ export class AchievementsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.authSub = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u: any = user.user || user;
         const userId = u.id || user.userId;

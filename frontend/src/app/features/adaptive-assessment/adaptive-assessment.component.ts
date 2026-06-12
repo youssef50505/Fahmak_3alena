@@ -92,7 +92,7 @@ export class AdaptiveAssessmentComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadQuizzes();
-    this.authSub = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u: any = user.user || user;
         this.currentUserId = u.id || user.userId;

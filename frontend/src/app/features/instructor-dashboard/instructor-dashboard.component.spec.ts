@@ -1,8 +1,9 @@
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InstructorDashboardComponent } from './instructor-dashboard.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('InstructorDashboardComponent', () => {
   let component: InstructorDashboardComponent;
@@ -10,8 +11,9 @@ describe('InstructorDashboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InstructorDashboardComponent, HttpClientTestingModule, RouterTestingModule]
-    })
+    imports: [InstructorDashboardComponent, RouterTestingModule],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
     .compileComponents();
     
     fixture = TestBed.createComponent(InstructorDashboardComponent);

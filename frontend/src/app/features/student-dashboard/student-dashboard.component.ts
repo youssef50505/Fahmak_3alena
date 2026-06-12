@@ -39,7 +39,7 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.authSub = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u: any = user.user || user;
         this.userName = `${u.firstName} ${u.lastName}`;

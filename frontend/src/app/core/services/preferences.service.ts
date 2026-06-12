@@ -28,11 +28,11 @@ export class PreferencesService {
 
   public loadPreferences(): void {
     this.http.get<UserPreferences>(this.API_URL).subscribe({
-      next: (prefs) => {
+      next: (prefs: UserPreferences) => {
         this.preferencesSubject.next(prefs);
         this.applyVisualPreferences(prefs);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load preferences', err);
       }
     });
@@ -40,7 +40,7 @@ export class PreferencesService {
 
   public savePreferences(prefs: UserPreferences): Observable<UserPreferences> {
     return this.http.put<UserPreferences>(this.API_URL, prefs).pipe(
-      tap(savedPrefs => {
+      tap((savedPrefs: UserPreferences) => {
         this.preferencesSubject.next(savedPrefs);
         this.applyVisualPreferences(savedPrefs);
       })

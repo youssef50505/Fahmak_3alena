@@ -1,6 +1,6 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, signal, computed } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { OAuthHelper } from '../../../core/services/oauth.helper';
@@ -9,28 +9,27 @@ import gsap from 'gsap';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, TitleCasePipe],
+  imports: [CommonModule, FormsModule, RouterModule, TitleCasePipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements AfterViewInit {
-  loginForm: FormGroup;
-  error: string = '';
-  isLoading: boolean = false;
-  activeModule: 'STUDENT' | 'INSTRUCTOR' = 'STUDENT';
+  email = signal('');
+  password = signal('');
+  error = signal('');
+  isLoading = signal(false);
+  activeModule = signal<'STUDENT' | 'INSTRUCTOR'>('STUDENT');
+
+  isFormValid = computed(() => {
+    return this.email().includes('@') && this.email().length > 3 && this.password().length > 0;
+  });
 
   constructor(
-    private fb: FormBuilder,
     private authService: AuthService,
     private oauthHelper: OAuthHelper,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
-    });
-  }
+  ) {}
 
   ngAfterViewInit() {
     // GSAP Entrance Animations
@@ -53,16 +52,16 @@ export class LoginComponent implements AfterViewInit {
   }
 
   handleGoogleLogin(token: string) {
-    this.isLoading = true;
-    this.error = '';
-    this.authService.loginWithGoogle(token, this.activeModule).subscribe({
+    this.isLoading.set(true);
+    this.error.set('');
+    this.authService.loginWithGoogle(token, this.activeModule()).subscribe({
       next: (response) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.redirectBasedOnRole(response.user?.role || response.role);
       },
       error: (err) => {
-        this.error = err.error?.error || 'Google login failed';
-        this.isLoading = false;
+        this.error.set(err.error?.error || 'Google login failed');
+        this.isLoading.set(false);
       }
     });
   }
@@ -70,45 +69,45 @@ export class LoginComponent implements AfterViewInit {
   handleFacebookLogin() {
     this.oauthHelper.loginWithFacebook((response) => {
       if (response && response.authResponse) {
-        this.isLoading = true;
-        this.error = '';
-        this.authService.loginWithFacebook(response.authResponse.accessToken, this.activeModule).subscribe({
+        this.isLoading.set(true);
+        this.error.set('');
+        this.authService.loginWithFacebook(response.authResponse.accessToken, this.activeModule()).subscribe({
           next: (res) => {
-            this.isLoading = false;
+            this.isLoading.set(false);
             this.redirectBasedOnRole(res.user?.role || res.role);
           },
           error: (err) => {
-            this.error = err.error?.error || 'Facebook login failed';
-            this.isLoading = false;
+            this.error.set(err.error?.error || 'Facebook login failed');
+            this.isLoading.set(false);
           }
         });
       } else {
-        this.error = 'Facebook login was cancelled or failed';
+        this.error.set('Facebook login was cancelled or failed');
       }
     });
   }
 
   setModule(module: 'STUDENT' | 'INSTRUCTOR') {
-    this.activeModule = module;
+    this.activeModule.set(module);
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.error = '';
+    if (this.isFormValid()) {
+      this.isLoading.set(true);
+      this.error.set('');
       
-      this.authService.login(this.loginForm.value).subscribe({
+      this.authService.login({ email: this.email(), password: this.password() }).subscribe({
         next: (response) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           this.redirectBasedOnRole(response.user?.role || response.role);
         },
         error: (err) => {
           if (err.status === 0) {
-            this.error = 'Unable to connect to the server. Is the backend running?';
+            this.error.set('Unable to connect to the server. Is the backend running?');
           } else {
-            this.error = typeof err.error === 'string' ? err.error : (err.error?.message || 'Invalid credentials');
+            this.error.set(typeof err.error === 'string' ? err.error : (err.error?.message || 'Invalid credentials'));
           }
-          this.isLoading = false;
+          this.isLoading.set(false);
         }
       });
     }
@@ -120,8 +119,8 @@ export class LoginComponent implements AfterViewInit {
       return;
     }
 
-    if (role !== this.activeModule) {
-      this.error = `This account belongs to a ${role.toLowerCase()}. Please select the correct portal to login.`;
+    if (role !== this.activeModule()) {
+      this.error.set(`This account belongs to a ${role.toLowerCase()}. Please select the correct portal to login.`);
       this.authService.logout(); // log them out since they are in the wrong portal
       return;
     }

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink, Router } from '@angular/router';
 import { InstructorService } from '../../core/services/instructor.service';
 import { InstructorDashboardResponse, StudentProgress } from '../../core/models/instructor.model';
@@ -11,7 +11,7 @@ import gsap from 'gsap';
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StudentProfileModalComponent],
+  imports: [RouterLink, StudentProfileModalComponent],
   templateUrl: './instructor-dashboard.component.html',
   styleUrl: './instructor-dashboard.component.css'
 })
@@ -39,7 +39,7 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterVie
   ) {}
 
   ngOnInit(): void {
-    this.authSub = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u = user.user || user;
         this.userName = `${u.firstName} ${u.lastName}`;

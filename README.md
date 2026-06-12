@@ -8,15 +8,31 @@ To run this project on your local machine, you will need:
 1. **Java 17** or higher
 2. **Node.js** (v18+)
 
-### Step 1: Start the Backend (Spring Boot 4.1.0)
+### Option A: Start Both Apps on Windows
+From the repository root, run:
+```bat
+scripts\run.bat
+```
+
+You can also run the script from the `scripts` folder:
+```bat
+cd scripts
+run.bat
+```
+
+The script installs frontend dependencies, opens Angular in a new terminal, and runs the Spring Boot backend in the current terminal.
+
+### Option B: Start Manually
+
+#### Step 1: Start the Backend (Spring Boot 4.1.0)
 Open a terminal in the `backend` folder and run:
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
-*(The backend runs on `http://localhost:8080`. It uses an in-memory H2 database, so no external database setup is required!)*
+*(The backend runs on `http://localhost:8080`. It uses a file-based H2 database under `backend/data`, so no external database setup is required.)*
 
-### Step 2: Start the Frontend (Angular 17+ with GSAP)
+#### Step 2: Start the Frontend (Angular 17+ with GSAP)
 Open a new terminal in the `frontend` folder and run:
 ```bash
 cd frontend
@@ -49,7 +65,7 @@ export OPENAI_API_KEY="your-api-key"
 ---
 
 ### 🔑 Default Test Accounts
-When the backend starts, it automatically seeds the in-memory database with the following test accounts:
+When the backend starts, it automatically seeds the local H2 database with the following test accounts:
 
 | Role | Email | Password |
 | :--- | :--- | :--- |

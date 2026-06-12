@@ -1,5 +1,5 @@
-import { Component, AfterViewInit, signal, computed } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { Component, AfterViewInit, signal, computed, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, TitleCasePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -28,27 +28,30 @@ export class LoginComponent implements AfterViewInit {
     private authService: AuthService,
     private oauthHelper: OAuthHelper,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngAfterViewInit() {
-    // GSAP Entrance Animations
-    gsap.fromTo('.auth-stagger', 
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' }
-    );
+    if (isPlatformBrowser(this.platformId)) {
+      // GSAP Entrance Animations
+      gsap.fromTo('.auth-stagger', 
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' }
+      );
 
-    gsap.fromTo('.graphic-3d',
-      { opacity: 0, scale: 0.9, x: 50 },
-      { opacity: 1, scale: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.3 }
-    );
+      gsap.fromTo('.graphic-3d',
+        { opacity: 0, scale: 0.9, x: 50 },
+        { opacity: 1, scale: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.3 }
+      );
 
-    // OAuth Init
-    this.oauthHelper.initializeGoogleSignIn('YOUR_GOOGLE_CLIENT_ID', (response) => {
-      this.handleGoogleLogin(response.credential);
-    });
-    this.oauthHelper.renderGoogleButton('google-btn-login');
-    this.oauthHelper.initializeFacebookSignIn('YOUR_FACEBOOK_APP_ID');
+      // OAuth Init
+      this.oauthHelper.initializeGoogleSignIn('YOUR_GOOGLE_CLIENT_ID', (response) => {
+        this.handleGoogleLogin(response.credential);
+      });
+      this.oauthHelper.renderGoogleButton('google-btn-login');
+      this.oauthHelper.initializeFacebookSignIn('YOUR_FACEBOOK_APP_ID');
+    }
   }
 
   handleGoogleLogin(token: string) {

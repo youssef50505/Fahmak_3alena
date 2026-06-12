@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { InstructorService } from '../../core/services/instructor.service';
 import { InstructorDashboardResponse, StudentProgress } from '../../core/models/instructor.model';
 import { AuthService } from '../../core/services/auth.service';
@@ -11,7 +12,7 @@ import gsap from 'gsap';
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [RouterLink, StudentProfileModalComponent],
+  imports: [StudentProfileModalComponent],
   templateUrl: './instructor-dashboard.component.html',
   styleUrl: './instructor-dashboard.component.css'
 })
@@ -31,6 +32,8 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterVie
   @ViewChildren('gsapRow') gsapRows!: QueryList<ElementRef>;
 
   private authSub?: Subscription;
+
+  private platformId = inject(PLATFORM_ID);
 
   constructor(
     private instructorService: InstructorService,
@@ -65,37 +68,39 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterVie
   }
 
   ngAfterViewInit(): void {
-    // Initial animations for static elements
-    gsap.from('.header-content', { 
-      opacity: 0, 
-      y: -20, 
-      duration: 0.6, 
-      ease: 'power3.out' 
-    });
-
-    gsap.from('.alert-banner', { 
-      opacity: 0, 
-      x: -30, 
-      duration: 0.5, 
-      delay: 0.2, 
-      ease: 'back.out(1.5)' 
-    });
-
-    // Staggered cards animation
-    if (this.gsapCards.length > 0) {
-      gsap.from(this.gsapCards.map(c => c.nativeElement), {
-        opacity: 0,
-        y: 30,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out',
-        delay: 0.3
+    if (isPlatformBrowser(this.platformId)) {
+      // Initial animations for static elements
+      gsap.from('.header-content', { 
+        opacity: 0, 
+        y: -20, 
+        duration: 0.6, 
+        ease: 'power3.out' 
       });
+
+      gsap.from('.alert-banner', { 
+        opacity: 0, 
+        x: -30, 
+        duration: 0.5, 
+        delay: 0.2, 
+        ease: 'back.out(1.5)' 
+      });
+
+      // Staggered cards animation
+      if (this.gsapCards && this.gsapCards.length > 0) {
+        gsap.from(this.gsapCards.map(c => c.nativeElement), {
+          opacity: 0,
+          y: 30,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: 'power2.out',
+          delay: 0.3
+        });
+      }
     }
   }
 
   animateRows(): void {
-    if (this.gsapRows && this.gsapRows.length > 0) {
+    if (isPlatformBrowser(this.platformId) && this.gsapRows && this.gsapRows.length > 0) {
       gsap.from(this.gsapRows.map(r => r.nativeElement), {
         opacity: 0,
         x: -20,

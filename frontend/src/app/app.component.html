@@ -1,4 +1,4 @@
-@if (!isAuthRoute(router.url)) {
+@if (!isAuthRoute()) {
   <div class="flex h-screen bg-surface-50 font-sans">
     <!-- Sidebar -->
     <app-sidebar class="w-64 flex-shrink-0 border-r border-surface-200 bg-surface z-20"></app-sidebar>
@@ -15,7 +15,7 @@
 }
 
 <!-- Render Auth Routes without Sidebar/Header -->
-@if (isAuthRoute(router.url)) {
+@if (isAuthRoute()) {
   <div>
     <router-outlet></router-outlet>
   </div>

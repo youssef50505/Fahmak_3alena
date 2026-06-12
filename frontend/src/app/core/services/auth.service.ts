@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -11,12 +12,15 @@ import { AuthStore } from '../store/auth.store';
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
   private authStore = inject(AuthStore);
+  private platformId = inject(PLATFORM_ID);
   public currentUser$ = toObservable(this.authStore.user);
 
   constructor(private http: HttpClient) {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      this.authStore.setUser(JSON.parse(savedUser));
+    if (isPlatformBrowser(this.platformId)) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        this.authStore.setUser(JSON.parse(savedUser));
+      }
     }
   }
 
@@ -24,7 +28,9 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
       tap((response: AuthResponse) => {
         if (response) {
-          localStorage.setItem('user', JSON.stringify(response));
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('user', JSON.stringify(response));
+          }
           this.authStore.setUser(response);
         }
       })
@@ -35,7 +41,9 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/oauth2/google`, { token, provider: 'GOOGLE', role }, { withCredentials: true }).pipe(
       tap((response: AuthResponse) => {
         if (response) {
-          localStorage.setItem('user', JSON.stringify(response));
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('user', JSON.stringify(response));
+          }
           this.authStore.setUser(response);
         }
       })
@@ -46,7 +54,9 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/oauth2/facebook`, { token, provider: 'FACEBOOK', role }, { withCredentials: true }).pipe(
       tap((response: AuthResponse) => {
         if (response) {
-          localStorage.setItem('user', JSON.stringify(response));
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('user', JSON.stringify(response));
+          }
           this.authStore.setUser(response);
         }
       })
@@ -57,7 +67,9 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData, { withCredentials: true }).pipe(
       tap((response: AuthResponse) => {
         if (response) {
-          localStorage.setItem('user', JSON.stringify(response));
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('user', JSON.stringify(response));
+          }
           this.authStore.setUser(response);
         }
       })
@@ -72,19 +84,26 @@ export class AuthService {
   }
 
   clearLocalSession() {
-    localStorage.removeItem('user');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('user');
+    }
     this.authStore.logout();
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('user');
+    if (isPlatformBrowser(this.platformId)) {
+      return !!localStorage.getItem('user');
+    }
+    return false;
   }
 
   getToken(): string | null {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      const userObj = JSON.parse(savedUser) as AuthResponse;
-      return userObj.token || null;
+    if (isPlatformBrowser(this.platformId)) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        const userObj = JSON.parse(savedUser) as AuthResponse;
+        return userObj.token || null;
+      }
     }
     return null;
   }
@@ -93,7 +112,9 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe(
       tap((response: AuthResponse) => {
         if (response) {
-          localStorage.setItem('user', JSON.stringify(response));
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('user', JSON.stringify(response));
+          }
           this.authStore.setUser(response);
         }
       })

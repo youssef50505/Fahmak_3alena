@@ -4,7 +4,7 @@ This document outlines the specific responsibilities and roadmap for the Spring 
 
 ## 1. Technology Stack
 
-*   **Core:** Spring Boot 3.x, Java 17
+*   **Core:** Spring Boot 4.1.0, Java 17
 *   **Data Access:** Spring Data JPA, Hibernate
 *   **Security:** Spring Security, JWT (io.jsonwebtoken)
 *   **API Documentation:** Springdoc OpenAPI (Swagger)
@@ -33,21 +33,31 @@ The application is structured by domain feature (`com.fahmak.alena.<domain>`).
 *   **Controllers:** `StudentDashboardController`, `InstructorDashboardController`
 *   **Responsibilities:** Aggregating data across multiple services to provide real-time metrics and charts for user dashboards.
 
+### Payment & Subscriptions (`/api/payments`)
+*   **Controllers:** `PaymentController`
+*   **Responsibilities:** Stripe SDK integration, handling webhooks, tracking `PaymentTransaction` and `Subscription` entities.
+
+### Collaborative & Signaling (`/ws/collaborative`)
+*   **Controllers:** `CollaborativeWebSocketController`
+*   **Responsibilities:** Real-time WebSockets/STOMP endpoint for matching students in the immersive hub and WebRTC signaling.
+
 ## 3. Development Roadmap
 
-### Phase 1: Security & Foundation
-*   [x] Setup Spring Boot, PostgreSQL, and basic folder structure.
+### Phase 1: Security & Foundation (Completed)
+*   [x] Setup Spring Boot 4.1.0, PostgreSQL, and basic folder structure.
 *   [x] Implement Spring Security configuration and JWT filters.
-*   [ ] Finalize User entity relationships and Auth controllers.
+*   [x] Finalize User entity relationships and Auth controllers.
 
-### Phase 2: Core Business Logic
-*   [ ] Implement Course, Module, and Lesson entities and repositories.
-*   [ ] Implement Assessment logic and basic grading.
+### Phase 2: Core Business Logic (Completed)
+*   [x] Implement Course, Module, and Lesson entities and repositories.
+*   [x] Implement Assessment logic and basic grading.
 
-### Phase 3: AI & Gamification
-*   [ ] Build internal AI Service client for Vertex AI/Gemini.
-*   [ ] Implement gamification triggers and Redis-backed leaderboards.
+### Phase 3: AI & Gamification (Completed)
+*   [x] Build internal AI Service client for Vertex AI/Gemini.
+*   [x] Implement gamification triggers and Redis-backed leaderboards.
 
-### Phase 4: Analytics & APIs
-*   [ ] Build complex data aggregation queries for dashboards.
+### Phase 4: Integrations & Cloud (In Progress)
+*   [x] Integrate Stripe for payments.
+*   [x] Integrate WebSockets for real-time collaboration.
+*   [ ] Build complex data aggregation queries for admin dashboards.
 *   [ ] Finalize Swagger documentation.

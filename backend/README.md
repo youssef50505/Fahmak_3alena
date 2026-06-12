@@ -22,8 +22,13 @@ Implemented domains:
 - **Framework:** Spring Boot 4.1.0
 - **Language:** Java 17
 - **Database:** PostgreSQL (production target), H2 (in-memory for development)
-- **Security:** Spring Security & JWT (Stateless, Role-based access)
+- **Security:** Spring Security & JWT (v0.12.6, Stateless, Role-based access)
 - **Caching:** Redis (`spring-boot-starter-cache`)
+- **Integrations:** 
+  - **Stripe** (v24.1.0) for payment processing
+  - **Google API Client** (v2.7.2) / Gemini for AI integrations
+  - **WebSockets** for real-time notifications and chat
+- **Testing:** TestContainers and JUnit Jupiter
 - **Build Tool:** Maven
 
 ## Running the Application

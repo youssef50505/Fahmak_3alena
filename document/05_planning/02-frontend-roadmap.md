@@ -4,9 +4,10 @@ This document details the frontend architecture and development roadmap for the 
 
 ## 1. Architectural Principles
 
-*   **Framework:** Angular 17+
-*   **Pattern:** Modular and Standalone Components. We prioritize standalone components for newer features to reduce `NgModule` boilerplate, while maintaining feature modules for logical grouping and lazy loading.
-*   **Styling:** Tailwind CSS. We strictly use utility classes in HTML and adhere to the project's custom `brand` color palette and defined shadows.
+*   **Framework:** Angular 21
+*   **Pattern:** Feature-First Standalone Components. We strictly use standalone components to eliminate `NgModule` boilerplate and maximize tree-shaking efficiency.
+*   **Reactivity:** Zoneless change detection combined with Angular Signals (`signal`, `computed`, `input`, `viewChild`). We also use Signal-based Forms.
+*   **Styling:** Tailwind CSS v4. We strictly use utility classes in HTML and adhere to the project's custom `brand` color palette and defined shadows.
 
 ## 2. Directory Structure
 
@@ -25,34 +26,35 @@ src/
         └── adaptive-assessment/
 ```
 
-## 3. State Management (NgRx)
+## 3. State Management (Angular Signals)
 
-We utilize NgRx to manage complex state across the application, adhering to the Redux pattern.
+We utilize **Angular Signals** embedded within Injectable services to manage complex state across the application, adhering to modern reactive patterns instead of heavyweight NgRx.
 
-### Key State Slices:
-1.  **Auth State:** Manages the current user, JWT token, and role.
+### Key State Services:
+1.  **Auth State:** Manages the current user, JWT token, and role using `signal()`.
 2.  **Course State:** Manages the list of enrolled courses, current progress, and active modules.
 3.  **Assessment State:** Tracks live quiz progress, timers, and AI-generated dynamic questions.
 4.  **Gamification State:** Live points, unlocked badges, and leaderboard rankings.
 
 ## 4. Development Roadmap
 
-### Phase 1: Core Foundation & Landing
-*   [x] Setup Angular workspace and Tailwind CSS configuration.
-*   [ ] Build global UI components (Navbar, Footer, Base Cards).
-*   [ ] Implement high-converting, modern Landing Page.
-*   [ ] Implement Auth UI (Login/Register) and basic routing guards.
+### Phase 1: Core Foundation & Migrations (Completed)
+*   [x] Setup Angular workspace and Tailwind CSS v4 configuration.
+*   [x] Build global UI components (Navbar, Footer, Base Cards) with GSAP.
+*   [x] Implement high-converting, modern Landing Page.
+*   [x] Implement Auth UI (Login/Register) and basic routing guards.
+*   [x] Migrate to Angular 21 (Zoneless, Signals, Signal Forms).
+*   [x] Migrate from Jasmine/Karma to Vitest.
+*   [x] Setup SSR with Event Replay and Hydration.
 
-### Phase 2: Student Experience
-*   [ ] Build Student Dashboard (Course overview, recent activity).
-*   [ ] Implement Adaptive Assessment UI.
-*   [ ] Integrate Immersive Hub / Virtual Classroom basic shell.
+### Phase 2: Student & Instructor Experience (Completed)
+*   [x] Build Student Dashboard (Course overview, recent activity).
+*   [x] Build Instructor Dashboard (Analytics, course management).
+*   [x] Implement Adaptive Assessment UI and Instructor Integrity Dashboard.
+*   [x] Integrate ZegoCloud WebRTC for Immersive Hub / Virtual Classroom.
 
-### Phase 3: Instructor & Admin
-*   [ ] Build Instructor Dashboard (Analytics, course management).
-*   [ ] Build Admin Dashboard (User management, system health).
-
-### Phase 4: Polish & Performance
-*   [ ] Implement advanced animations and glassmorphic UI polish.
-*   [ ] Optimize lazy loading boundaries and bundle sizes.
-*   [ ] Ensure full accessibility (a11y) compliance.
+### Phase 3: Enhancements & Cloud Deployments (In Progress)
+*   [ ] Enhance 3D Spline environments inside the Immersive Hub.
+*   [ ] Implement advanced analytics charts for Admin Revenue.
+*   [ ] Optimize lazy loading boundaries and bundle sizes (`@defer` usage).
+*   [ ] Containerize with Docker and deploy to Kubernetes.

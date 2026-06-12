@@ -7,10 +7,10 @@
 
 ## 2. Technology Stack
 **Frontend:**
-- **Framework:** Angular 17+ (Using Standalone Components API, no NgModules)
-- **Styling:** Tailwind CSS
+- **Framework:** Angular 21 (Zoneless, Signal-based Reactivity)
+- **Styling:** Tailwind CSS v4
 - **Animations:** GSAP (GreenSock Animation Platform) for rich, interactive, and high-performance micro-animations and transitions.
-- **State Management/Core:** TypeScript, HTML, CSS, RxJS, Angular Services
+- **State Management/Core:** TypeScript, HTML, CSS, RxJS, Angular Signals
 - **Architecture Features:** Feature-first modular structure with Standalone Components.
 
 **Backend:**
@@ -58,12 +58,15 @@ When generating new frontend components or pages, strictly adhere to the followi
 - **Responsive:** Always use Tailwind's responsive utility variants (`sm:`, `md:`, `lg:`, `xl:`) to ensure perfect layout across mobile, tablet, and desktop screens.
 
 ## 4. Coding Conventions & Best Practices
-**Frontend (Angular):**
-- Strictly use **Standalone Components** (`standalone: true`). Do not generate or suggest `NgModule` based configurations.
-- Use `app.routes.ts` for routing configurations.
-- Keep component `.ts` files focused on logic and use `.html` templates for structure.
-- Style strictly with Tailwind utility classes in the HTML. Avoid writing custom CSS in stylesheets unless absolutely necessary.
-- Use feature-specific services placed in `core/services` for state and data management.
+**Frontend (Angular 21):**
+- Strictly use **Standalone Components** (`standalone: true`).
+- Strictly use **Zoneless Change Detection**. Do not import or use `zone.js`.
+- Strictly use **Signal-based reactivity** (`signal()`, `computed()`, `input()`, `viewChild()`).
+- Strictly use **Signal-based Forms**. Do NOT use or import `ReactiveFormsModule`, `FormGroup`, or `FormControl`.
+- Use `app.routes.ts` for routing configurations with Server-Side Rendering (`RenderMode`).
+- Style strictly with Tailwind v4 utility classes in the HTML.
+- For unit testing, use **Vitest** (`describe`, `it`, `expect` from `vitest/globals`). Do NOT use Jasmine or Karma.
+- Encapsulate heavy third-party libraries (e.g. ZegoCloud) in `@defer` blocks to prevent SSR optimization bailouts.
 
 **Backend (Spring Boot):**
 - Use Lombok annotations (`@Data`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Builder`, etc.) to reduce boilerplate code.
@@ -77,4 +80,4 @@ When asked to write code, design new pages, or add features to "Fahmak Alena", y
 1. **Match the Style:** Always use the defined `brand` and `surface` color palettes, along with the `Inter` font and custom shadows from the Tailwind config. Do not use generic colors when custom brand colors are available.
 2. **Contextual Awareness:** Remember the distinct roles (Student, Instructor, Admin) and tailor the UI, wording, and logic accordingly.
 3. **Integration:** If adding new backend features, structure them as new packages within the monolithic architecture following the existing `controller/service/repository` pattern.
-4. **Consistency:** Write modern, clean, and robust code matching Angular 17+ (Standalone) and Spring Boot 3+ standards. Always verify that the generated code aligns with the overall "Fahmak Alena" vision of being a cutting-edge, AI-powered educational platform.
+4. **Consistency:** Write modern, clean, and robust code matching Angular 21 (Zoneless, Signals) and Spring Boot 4.1.0 standards. Always verify that the generated code aligns with the overall "Fahmak Alena" vision of being a cutting-edge, AI-powered educational platform.

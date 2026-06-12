@@ -1,31 +1,25 @@
-# Fahmak Alena - Task List
+# Remaining Tasks Checklist
 
-## 1. Project Initialization & Setup
-- `[ ]` Initialize Angular workspace (`fahmak-alena-frontend`) with Tailwind CSS and NgRx.
-- `[ ]` Initialize Backend parent project (`fahmak-alena-backend`).
-- `[ ]` Set up `docker-compose.yml` for PostgreSQL and Redis.
+*Updated: June 12, 2026*
 
-## 2. Backend - Core Microservices
-- `[ ]` Setup API Gateway (Spring Cloud Gateway).
-- `[ ]` Setup User Service (Authentication, Profile).
-- `[ ]` Setup Course Service.
-- `[ ]` Setup Assessment Service.
-- `[ ]` Setup Gamification Service.
-- `[ ]` Setup AI Learning Service (Gemini API integration).
+This checklist tracks the ongoing progress of the remaining features post-migration.
 
-## 3. Frontend - Core Modules
-- `[ ]` Implement Shared UI Components (Buttons, Cards, Navigation).
-- `[ ]` Implement Auth Module (Login, Registration).
-- `[ ]` Implement Student Portal (Dashboard, Assessment, Hub).
-- `[ ]` Implement Instructor Portal (Dashboard, Course Creation).
-- `[ ]` Implement Admin Portal (Dashboard, User Management).
-- `[ ]` Implement Virtual Classroom UI.
+## 1. CI/CD & Cloud Deployments
+- `[ ]` Create multi-stage Dockerfiles.
+- `[ ]` Setup GitHub Actions workflow.
+- `[ ]` Write Kubernetes deployment descriptors.
+- `[ ]` Create database backup cron job.
 
-## 4. Database & State
-- `[ ]` Create Liquibase/Flyway scripts based on ERD.
-- `[ ]` Implement NgRx state management for frontend.
+## 2. Advanced Analytics
+- `[ ]` Implement backend revenue aggregation endpoints.
+- `[ ]` Install frontend charting library.
+- `[ ]` Build `AdminRevenueChartComponent`.
 
-## 5. Verification
-- `[ ]` Verify local infrastructure starts correctly.
-- `[ ]` Test Microservices interactions.
-- `[ ]` Test Frontend UI/UX responsive design against mockups.
+## 3. Immersive Hub Enhancements
+- `[ ]` Setup WebSocket connections for avatar syncing.
+- `[ ]` Bind Spline 3D viewer events to Angular Signals.
+
+## 4. Social Login
+- `[ ]` Integrate `spring-boot-starter-oauth2-client`.
+- `[ ]` Update `User` entity for OAuth identities.
+- `[ ]` Add Google sign-in UI to `LoginComponent`.

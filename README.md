@@ -32,7 +32,7 @@ cd backend
 ```
 *(The backend runs on `http://localhost:8080`. It uses a file-based H2 database under `backend/data`, so no external database setup is required.)*
 
-#### Step 2: Start the Frontend (Angular 17+ with GSAP)
+#### Step 2: Start the Frontend (Angular 21 Zoneless with GSAP)
 Open a new terminal in the `frontend` folder and run:
 ```bash
 cd frontend
@@ -44,9 +44,11 @@ npm start
 ---
 
 ### 🎨 Latest Updates
+- **Frontend Migration:** Successfully migrated the frontend to **Angular 21** with **Zoneless** change detection and **Signal-based** reactivity.
 - **Backend Migration:** Successfully upgraded the backend to **Spring Boot 4.1.0**, updating dependencies and mock utilities.
-- **Frontend Sync:** UI fully aligned with the backend's new logic.
-- **New Features:** Added **User Profile Settings**, **Instructor Course Management**, and **Instructor Integrity Dashboard**.
+- **Testing:** Replaced Jasmine/Karma with **Vitest** for robust and modern unit testing.
+- **Styling:** Migrated styling system to **Tailwind CSS v4**.
+- **WebRTC:** Integrated ZegoCloud for virtual tutoring rooms.
 - **Animations:** Fully integrated **GSAP** into all new frontend components for premium UI/UX.
 
 ---
@@ -77,7 +79,7 @@ When the backend starts, it automatically seeds the local H2 database with the f
 
 ### 📂 Repository Structure
 - `backend/`: Spring Boot 4.1.0 application (Modular Monolithic Architecture).
-- `frontend/`: Angular 17+ Standalone application with Tailwind CSS and GSAP.
+- `frontend/`: Angular 21 Standalone application (Zoneless, Signals) with Tailwind CSS v4 and GSAP.
 - `document/`: Project specifications, analysis, system contexts, and API endpoints.
 - `devops/`: Docker Compose and infrastructure files.
 - `schema/`: Database schemas and architecture diagrams.

@@ -7,12 +7,12 @@ This document outlines the high-level system architecture for the **Fahmak Alena
 The platform follows a conceptual Microservices architecture pattern designed for scalability and clear separation of concerns.
 
 ### Frontend Application
-*   **Framework:** Angular 17+
-*   **State Management:** NgRx
+*   **Framework:** Angular 21 (Zoneless)
+*   **State Management:** Angular Signals
 *   **Responsibility:** Provides the UI for Students, Instructors, and Administrators. Communicates with backend via REST APIs.
 
 ### Backend Application
-*   **Framework:** Spring Boot 3.x
+*   **Framework:** Spring Boot 4.1.0
 *   **Language:** Java 17
 *   **Responsibility:** Handles business logic, data persistence, security, and external AI integrations.
 

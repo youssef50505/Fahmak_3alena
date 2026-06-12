@@ -21,7 +21,7 @@ This document serves as the internal memory and comprehensive analysis of the **
 - **AI Integration:** OpenAI / Groq API used for AI features. Requires `OPENAI_API_KEY`.
 - **DevOps:** Includes `docker-compose.yml` for Postgres, Redis, and a DB-backup cron job.
 
-## 3. Backend Architecture (Spring Boot 3.x, Java 17)
+## 3. Backend Architecture (Spring Boot 4.1.0, Java 17)
 The backend follows a **Modular Monolithic** architecture. It is divided into isolated domain packages rather than separate microservices.
 
 ### Domain Modules (`com.fahmak.alena.*`)
@@ -43,8 +43,8 @@ Each module follows the standard layered architecture (`Controller` -> `Service`
 - **Exception Handling:** `GlobalExceptionHandler.java` catches exceptions and formats them into a standardized `ErrorResponse`.
 - **CORS:** Global CORS configured in `CorsConfig.java` (defaults to allow `http://localhost:4200`).
 
-## 4. Frontend Architecture (Angular 17+)
-The frontend embraces a **Feature-First Standalone** component architecture, dropping NgModules entirely in favor of `standalone: true`.
+## 4. Frontend Architecture (Angular 21)
+The frontend embraces a **Feature-First Standalone** component architecture, dropping NgModules entirely in favor of `standalone: true`. It utilizes **Zoneless Change Detection**, **Signal-based reactivity**, and **Signal-based Forms**. Testing is powered by **Vitest**.
 
 ### Core Layers (`src/app`)
 - **`core/`**: The backbone of the app.
@@ -64,8 +64,8 @@ Contains standalone components loaded lazily via `app.routes.ts`:
 - **Engagement:** `achievements`, `leaderboard`.
 - **Other:** `landing`, `pricing`, `accessibility-preferences`.
 
-## 5. UI/UX & Design System (Tailwind CSS)
-The project strictly enforces a premium, modern aesthetic using Tailwind CSS.
+## 5. UI/UX & Design System (Tailwind CSS v4)
+The project strictly enforces a premium, modern aesthetic using Tailwind CSS v4 and GSAP animations.
 - **Typography:** `Inter`, sans-serif. (`text-gray-900 bg-gray-50 antialiased` globally).
 - **Brand Palette (Blues):** `brand-50` to `brand-900`, with `brand-500` (#3b82f6) as the primary brand color.
 - **Surface Palette:** `surface` (#ffffff) to `surface-200`.
@@ -76,6 +76,6 @@ The project strictly enforces a premium, modern aesthetic using Tailwind CSS.
 
 ## 6. Best Practices & Agent Guidelines
 When modifying or extending this project, strictly adhere to:
-1. **Frontend:** Use Standalone Components. Style exclusively with Tailwind using the defined brand variables and custom shadows. Keep `.ts` files logic-focused.
+1. **Frontend:** Use Standalone Components in Angular 21. Strictly use Zoneless Change Detection and Signal APIs. Style exclusively with Tailwind v4. For unit testing, use Vitest.
 2. **Backend:** Use Lombok annotations. Group by domain (Controller/Service/Repo). Return DTOs, not raw Entities. Protect endpoints via Spring Security.
 3. **Consistency:** Ensure new features match the established visual hierarchy and role-based logic. Maintain the "modern & clean" architectural vision.

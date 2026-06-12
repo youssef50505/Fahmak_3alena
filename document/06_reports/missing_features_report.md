@@ -1,59 +1,37 @@
-# Fahmak Alena - Gap Analysis & Missing Features Report
+# Gap Analysis & Missing Features Report
 
-## Overview
-This report highlights the discrepancies between the official documentation (`Fahmak_Alena_User_Stories.pdf` and `Fahmak_Alena_System_Analysis_Design_Document_Golden_Balanced.pdf`) and the currently implemented codebase. 
+*Date: June 12, 2026*
 
-Through deep analysis of both the Angular Frontend and Spring Boot Backend, several "In-Scope" features and Non-Functional Requirements are currently missing and require development to meet the initial release goals.
+This report outlines the remaining features and structural requirements that need to be addressed before the **Fahmak Alena** platform reaches full production readiness. 
 
----
+The previous major gaps (Angular 21 migration, Zoneless architecture, Signal Forms, Stripe integration, Vitest testing, and WebRTC integration) have been successfully resolved.
 
-## 1. Missing Core Functional Requirements
+## 1. Cloud Deployments & CI/CD
+- **Current State:** The application runs locally via Docker Compose or manual `npm start` and `mvnw spring-boot:run` commands.
+- **Missing Feature:** We need a robust Continuous Integration / Continuous Deployment (CI/CD) pipeline using GitHub Actions.
+- **Action Items:**
+  - Create Dockerfiles optimized for production builds (multi-stage) for both frontend and backend.
+  - Configure Kubernetes deployment and service descriptors.
+  - Setup automated daily database backups (`pg_dump`) to secure cloud storage (AWS S3 or GCP Cloud Storage).
 
-### 1.1 Social Login Integration (Google/Facebook)
-- **Reference:** User Story FR-UM-001 ("register and log in ... using social accounts"). Priority: **High**.
-- **Current State:** `AuthController.java` and frontend auth components only support standard email/password registration and authentication.
-- **Action Required:** 
-  - **Backend:** Integrate Spring Security OAuth2 Client. Create endpoints for Google/Facebook callbacks. Update `User` entity to support OAuth providers.
-  - **Frontend:** Add Google/Facebook login buttons to the Auth UI and handle OAuth2 redirects and token exchanges.
+## 2. Advanced Analytics & Reporting
+- **Current State:** Basic data aggregation exists.
+- **Missing Feature:** The Admin Revenue Dashboard and Instructor Analytics lack detailed, interactive data visualizations.
+- **Action Items:**
+  - Integrate a charting library compatible with Angular 21 Signals (e.g., modern Chart.js or specialized D3 signal wrappers).
+  - Expose complex SQL aggregation endpoints via the backend `/api/dashboard`.
 
-### 1.2 Subscription & Payment Management
-- **Reference:** User Story FR-MO-001 ("support various subscription plans and securely process payments"). Priority: **High** (8 pts for admin, 5 pts for payment processing).
-- **Current State:** Completely missing. No `payment` package in backend. No subscription management UI for admins or students.
-- **Action Required:**
-  - **Backend:** Create a `payment` package. Integrate a payment gateway (e.g., Stripe SDK). Create `Subscription` and `PaymentTransaction` entities.
-  - **Frontend:** Build subscription plan selection UI, checkout process, and an Admin dashboard section for revenue and subscription management.
+## 3. Immersive Hub 3D Enhancements
+- **Current State:** The Immersive Hub supports WebRTC collaborative sessions and basic 3D environments via `@splinetool/viewer`.
+- **Missing Feature:** The 3D environments need deeper interactivity and event-driven communication with the Angular state.
+- **Action Items:**
+  - Map Spline 3D objects to interactive Angular events using `spline-viewer` event listeners.
+  - Synchronize avatar positions or interactive states across clients via WebSockets.
 
-### 1.3 Robust Cheating Detection
-- **Reference:** Instructor User Story ("utilize robust cheating detection mechanisms for assessments"). Priority: **High** (8 pts).
-- **Current State:** The UI (`instructor-dashboard`) has static text placeholders for cheating detection, but there is zero backend logic (no webcam monitoring, browser locking, or anomaly detection).
-- **Action Required:**
-  - **Backend:** Implement heuristics or AI models to flag unusual quiz behavior (time taken, rapid switching). 
-  - **Frontend:** Implement browser focus tracking (blur/focus events) during quizzes and report to backend.
-
-### 1.4 Peer Tutoring Matching System
-- **Reference:** Student Collaborative Learning User Story ("use a Peer Tutoring Matching System"). Priority: **Medium** (5 pts).
-- **Current State:** The `immersive-hub.component.html` contains hardcoded HTML placeholders ("Seif, Amr - Lvl Expert") simulating a voice group matching system. No actual backend exists.
-- **Action Required:**
-  - **Backend:** Create a matching algorithm in a new `collaborative` package. Requires WebSockets/STOMP for real-time presence.
-  - **Frontend:** Implement dynamic user fetching, WebRTC or signaling for real-time voice/chat integration.
-
----
-
-## 2. Missing Non-Functional Requirements
-
-### 2.1 Automated Data Backups
-- **Reference:** System User Story ("perform daily automated data backups with a clear disaster recovery plan"). Priority: **High** (5 pts).
-- **Current State:** No automated backup scripts (`pg_dump` cronjobs) or disaster recovery plans (DRP) exist in the codebase.
-- **Action Required:** 
-  - DevOps implementation: Write a shell script or Docker container that runs `pg_dump` daily and uploads the payload to a secure cloud storage bucket (e.g., AWS S3, Google Cloud Storage).
-
----
-
-## 3. Partially Implemented Features
-
-### 3.1 Immersive Learning (AR/VR)
-- **Reference:** Student User Story ("access basic AR/VR integrated learning modules"). Priority: **Medium** (8 pts).
-- **Current State:** Implemented via embedding 3rd party Sketchfab iframes in `immersive-hub`. While this satisfies "Basic 3D Models", true AR/VR interactive modules tied to student progress might require deeper native WebGL integration in the future.
-
-## Conclusion
-To align the project with its System Analysis documentation for the "Initial Release", the development team should prioritize **OAuth2 Integrations**, the **Payment Gateway**, and **Backend Security/Cheating Detection Logic**, as these carry the highest impact for go-live readiness.
+## 4. Social Login Completion
+- **Current State:** JWT Email/Password authentication is fully functional.
+- **Missing Feature:** Google/Facebook OAuth2 Client integration on the backend.
+- **Action Items:**
+  - Configure Spring Security OAuth2 resource server/client.
+  - Update `User` entity to support multiple authentication providers.
+  - Add Google/Facebook sign-in buttons to the frontend auth components.

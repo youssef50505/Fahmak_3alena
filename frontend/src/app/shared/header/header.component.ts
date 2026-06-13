@@ -36,6 +36,13 @@ export class HeaderComponent implements OnInit {
       this.unreadCount = count;
     });
 
+    this.gamificationService.profile$.subscribe(profile => {
+      if (profile) {
+        this.gamificationProfile = profile;
+        this.xpPercentage = Math.min((profile.totalXp / 10000) * 100, 100);
+      }
+    });
+
     this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
         const u: any = user.user || user;
@@ -49,10 +56,6 @@ export class HeaderComponent implements OnInit {
           
           if (this.userRole === 'STUDENT') {
             this.gamificationService.getUserProfile(userId).subscribe({
-              next: (profile) => {
-                this.gamificationProfile = profile;
-                this.xpPercentage = Math.min((profile.totalXp / 10000) * 100, 100);
-              },
               error: (err) => console.error('Error fetching gamification profile', err)
             });
           }

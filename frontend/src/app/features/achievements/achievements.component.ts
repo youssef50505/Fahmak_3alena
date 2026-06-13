@@ -79,7 +79,7 @@ import { GamificationProfile } from '../../core/models/gamification.model';
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               
-              <!-- Tic Tac Toe Native -->
+              <!-- Sudoku Native -->
               <div class="bg-gray-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col border-4 border-gray-800">
                 <div class="bg-gray-800 px-6 py-4 flex justify-between items-center">
                   <div class="flex items-center gap-2">
@@ -87,29 +87,55 @@ import { GamificationProfile } from '../../core/models/gamification.model';
                     <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
                     <div class="w-3 h-3 rounded-full bg-green-500"></div>
                   </div>
-                  <h4 class="text-gray-100 font-bold tracking-wider text-sm">TIC TAC TOE</h4>
+                  <h4 class="text-gray-100 font-bold tracking-wider text-sm">SUDOKU</h4>
                 </div>
-                <div class="w-full h-[450px] bg-indigo-50 flex flex-col items-center justify-center p-6 relative">
-                  <div class="mb-6 text-xl font-bold text-indigo-900">
-                    @if (winner) {
-                      Winner: {{ winner }}! 🎉
-                    } @else if (!board.includes('')) {
-                      It's a Draw! 🤝
+                <div class="w-full min-h-[480px] bg-indigo-50 flex flex-col items-center justify-center p-4 relative flex-1">
+                  <div class="mb-4 text-xl font-bold text-indigo-900">
+                    @if (sudokuSolved) {
+                      Puzzle Solved! 🎉 Brilliant!
                     } @else {
-                      Next Player: {{ xIsNext ? 'X' : 'O' }}
+                      Fill in the missing numbers
                     }
                   </div>
-                  <div class="grid grid-cols-3 gap-3 bg-indigo-200 p-3 rounded-xl">
-                    @for (cell of board; track $index) {
-                      <div 
-                        (click)="makeMove($index)"
-                        class="w-20 h-20 bg-white rounded-lg flex items-center justify-center text-4xl font-black cursor-pointer hover:bg-indigo-50 transition-colors shadow-sm select-none"
-                        [ngClass]="{'text-indigo-600': cell === 'X', 'text-rose-500': cell === 'O'}">
-                        {{ cell }}
+                  
+                  <div class="inline-block bg-indigo-900 p-1 rounded-lg shadow-inner">
+                    @for (row of sudokuBoard; track rIndex; let rIndex = $index) {
+                      <div class="flex">
+                        @for (cell of row; track cIndex; let cIndex = $index) {
+                          <div 
+                            (click)="selectSudokuCell(rIndex, cIndex)"
+                            class="w-8 h-8 sm:w-10 sm:h-10 border border-indigo-200 flex items-center justify-center text-lg sm:text-xl font-bold cursor-pointer select-none transition-colors"
+                            [ngClass]="{
+                              'bg-indigo-100 text-indigo-900': sudokuInitial[rIndex][cIndex],
+                              'bg-white text-indigo-600': !sudokuInitial[rIndex][cIndex] && (!selectedSudokuCell || selectedSudokuCell.r !== rIndex || selectedSudokuCell.c !== cIndex),
+                              'bg-indigo-300 text-indigo-900': selectedSudokuCell && selectedSudokuCell.r === rIndex && selectedSudokuCell.c === cIndex,
+                              'border-r-2 border-r-indigo-400': (cIndex + 1) % 3 === 0 && cIndex !== 8,
+                              'border-b-2 border-b-indigo-400': (rIndex + 1) % 3 === 0 && rIndex !== 8
+                            }">
+                            {{ cell || '' }}
+                          </div>
+                        }
                       </div>
                     }
                   </div>
-                  <button (click)="resetTicTacToe()" class="mt-8 px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+
+                  <!-- Number Keypad -->
+                  <div class="mt-6 grid grid-cols-5 gap-2 w-full max-w-[320px]">
+                    @for (num of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track num) {
+                      <button 
+                        (click)="inputSudoku(num)"
+                        class="p-2 bg-white rounded-md shadow border border-indigo-100 text-indigo-700 font-bold text-lg hover:bg-indigo-50 active:bg-indigo-200">
+                        {{ num }}
+                      </button>
+                    }
+                    <button 
+                      (click)="inputSudoku(null)"
+                      class="p-2 bg-rose-50 rounded-md shadow border border-rose-100 text-rose-600 font-bold text-sm hover:bg-rose-100 active:bg-rose-200 flex items-center justify-center">
+                      Del
+                    </button>
+                  </div>
+
+                  <button (click)="initSudoku()" class="mt-6 px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-md text-sm">
                     Restart Game
                   </button>
                 </div>
@@ -125,7 +151,7 @@ import { GamificationProfile } from '../../core/models/gamification.model';
                   </div>
                   <h4 class="text-gray-100 font-bold tracking-wider text-sm">MEMORY MATCH</h4>
                 </div>
-                <div class="w-full h-[450px] bg-emerald-50 flex flex-col items-center justify-center p-6 relative">
+                <div class="w-full min-h-[480px] bg-emerald-50 flex flex-col items-center justify-center p-6 relative flex-1">
                   <div class="mb-4 text-xl font-bold text-emerald-900">
                     @if (matchedPairs === 6) {
                       You Won! Brilliant Memory! 🏆
@@ -170,10 +196,34 @@ export class AchievementsComponent implements OnInit, OnDestroy {
   isLoading = true;
   private authSub?: Subscription;
 
-  // Tic Tac Toe State
-  board: string[] = Array(9).fill('');
-  xIsNext: boolean = true;
-  winner: string | null = null;
+  // Sudoku State
+  sudokuBoard: (number | null)[][] = [];
+  sudokuInitial: boolean[][] = [];
+  selectedSudokuCell: {r: number, c: number} | null = null;
+  sudokuSolved = false;
+
+  readonly initialSudokuStr = [
+    "53..7....",
+    "6..195...",
+    ".98....6.",
+    "8...6...3",
+    "4..8.3..1",
+    "7...2...6",
+    ".6....28.",
+    "...419..5",
+    "....8..79"
+  ];
+  readonly solvedSudokuStr = [
+    "534678912",
+    "672195348",
+    "198342567",
+    "859761423",
+    "426853791",
+    "713924856",
+    "961537284",
+    "287419635",
+    "345286179"
+  ];
 
   // Memory Game State
   cards: any[] = [];
@@ -184,6 +234,7 @@ export class AchievementsComponent implements OnInit, OnDestroy {
     private gamificationService: GamificationService,
     private authService: AuthService
   ) {
+    this.initSudoku();
     this.initMemoryGame();
   }
 
@@ -206,34 +257,57 @@ export class AchievementsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- Tic Tac Toe Logic ---
-  makeMove(idx: number) {
-    if (!this.board[idx] && !this.winner) {
-      this.board[idx] = this.xIsNext ? 'X' : 'O';
-      this.xIsNext = !this.xIsNext;
-      this.winner = this.calculateWinner();
+  // --- Sudoku Logic ---
+  initSudoku() {
+    this.sudokuBoard = [];
+    this.sudokuInitial = [];
+    this.sudokuSolved = false;
+    this.selectedSudokuCell = null;
+    
+    for (let r = 0; r < 9; r++) {
+      const row: (number | null)[] = [];
+      const initRow: boolean[] = [];
+      for (let c = 0; c < 9; c++) {
+        const char = this.initialSudokuStr[r][c];
+        if (char === '.') {
+          row.push(null);
+          initRow.push(false);
+        } else {
+          row.push(parseInt(char, 10));
+          initRow.push(true);
+        }
+      }
+      this.sudokuBoard.push(row);
+      this.sudokuInitial.push(initRow);
     }
   }
 
-  calculateWinner(): string | null {
-    const lines = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8],
-      [0, 3, 6], [1, 4, 7], [2, 5, 8],
-      [0, 4, 8], [2, 4, 6]
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
-        return this.board[a];
+  selectSudokuCell(r: number, c: number) {
+    if (!this.sudokuInitial[r][c]) {
+      this.selectedSudokuCell = {r, c};
+    }
+  }
+
+  inputSudoku(num: number | null) {
+    if (this.selectedSudokuCell && !this.sudokuSolved) {
+      const {r, c} = this.selectedSudokuCell;
+      this.sudokuBoard[r][c] = num;
+      this.checkSudokuWin();
+    }
+  }
+
+  checkSudokuWin() {
+    let won = true;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const expected = parseInt(this.solvedSudokuStr[r][c], 10);
+        if (this.sudokuBoard[r][c] !== expected) {
+          won = false;
+          break;
+        }
       }
     }
-    return null;
-  }
-
-  resetTicTacToe() {
-    this.board = Array(9).fill('');
-    this.xIsNext = true;
-    this.winner = null;
+    this.sudokuSolved = won;
   }
 
   // --- Memory Game Logic ---

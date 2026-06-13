@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 public class AuthControllerIntegrationTest {
 
     @Autowired
@@ -47,7 +49,6 @@ public class AuthControllerIntegrationTest {
                 .apply(springSecurity())
                 .build();
 
-        userRepository.deleteAll();
         User testUser = new User();
         testUser.setEmail("test@fahmak.com");
         testUser.setUsername("testuser");
@@ -68,7 +69,7 @@ public class AuthControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").exists())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie().exists("accessToken"))
                 .andExpect(jsonPath("$.email").value("test@fahmak.com"));
     }
 

@@ -10,6 +10,7 @@ Write-Host "Waiting 35 seconds for the backend server to fully start..."
 Start-Sleep -Seconds 35
 
 Write-Host "Running the data seeding script..."
+
 cd scripts
 node seed_database.js
 

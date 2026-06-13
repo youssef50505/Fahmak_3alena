@@ -49,6 +49,7 @@ public class AuthController {
             String refreshToken = jwtService.generateRefreshToken(user);
             String accessToken = jwtService.generateToken(user);
             
+            response.setAccessToken(accessToken);
             setCookies(responseObj, accessToken, refreshToken);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
@@ -73,6 +74,7 @@ public class AuthController {
             String refreshToken = jwtService.generateRefreshToken(user);
             String accessToken = jwtService.generateToken(user);
             
+            response.setAccessToken(accessToken);
             setCookies(responseObj, accessToken, refreshToken);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
@@ -103,6 +105,7 @@ public class AuthController {
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .email(user.getEmail())
+                    .accessToken(token)
                     .build();
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -131,6 +134,7 @@ public class AuthController {
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .email(user.getEmail())
+                    .accessToken(token)
                     .build();
 
             return ResponseEntity.ok(response);
@@ -174,6 +178,7 @@ public class AuthController {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
+                .accessToken(newToken)
                 .build();
                 
         return ResponseEntity.ok(response);

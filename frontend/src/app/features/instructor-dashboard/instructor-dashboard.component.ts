@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList, inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import { Router } from '@angular/router';
@@ -34,7 +34,8 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterVie
   constructor(
     private instructorService: InstructorService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -54,10 +55,12 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy, AfterVie
         
         // Wait a tick for the DOM to render the fetched data rows, then animate them
         setTimeout(() => this.animateRows(), 50);
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error fetching instructor dashboard data', err);
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

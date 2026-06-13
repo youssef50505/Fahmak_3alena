@@ -15,6 +15,10 @@ export class AuthService {
   private platformId = inject(PLATFORM_ID);
   public currentUser$ = toObservable(this.authStore.user);
 
+  getCurrentUser() {
+    return this.authStore.user();
+  }
+
   constructor(private http: HttpClient) {
     if (isPlatformBrowser(this.platformId)) {
       const savedUser = localStorage.getItem('user');

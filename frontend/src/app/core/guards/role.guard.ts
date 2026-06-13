@@ -15,24 +15,21 @@ export const roleGuard: CanActivateFn = (route, state) => {
 
   const expectedRoles: string[] = route.data['roles'];
 
-  return authService.currentUser$.pipe(
-    take(1),
-    map(userObj => {
-      if (!userObj) {
-        return router.parseUrl('/login');
-      }
+  const userObj = authService.getCurrentUser();
+  
+  if (!userObj) {
+    return router.parseUrl('/login');
+  }
 
-      const role: string | undefined = userObj.role;
-      
-      if (!expectedRoles || (role && expectedRoles.includes(role))) {
-        return true;
-      }
-      
-      // If role doesn't match, redirect to their proper dashboard
-      if (role === 'INSTRUCTOR') return router.parseUrl('/instructor');
-      if (role === 'ADMIN') return router.parseUrl('/admin');
-      
-      return router.parseUrl('/dashboard');
-    })
-  );
+  const role: string | undefined = userObj.role;
+  
+  if (!expectedRoles || (role && expectedRoles.includes(role))) {
+    return true;
+  }
+  
+  // If role doesn't match, redirect to their proper dashboard
+  if (role === 'INSTRUCTOR') return router.parseUrl('/instructor');
+  if (role === 'ADMIN') return router.parseUrl('/admin');
+  
+  return router.parseUrl('/dashboard');
 };

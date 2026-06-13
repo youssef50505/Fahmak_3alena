@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CourseService } from '../../core/services/course.service';
@@ -35,7 +35,8 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private courseService: CourseService,
     private gamificationService: GamificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -47,18 +48,26 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
         return this.gamificationService.getUserProfile(userId);
       })
     ).subscribe({
-      next: (profile) => this.gamificationProfile = profile,
-      error: (err) => console.error('Failed to load gamification profile', err)
+      next: (profile) => {
+        this.gamificationProfile = profile;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load gamification profile', err);
+        this.cdr.markForCheck();
+      }
     });
 
     this.courseService.getRecommendedCourses().subscribe({
       next: (courses: Course[]) => {
         this.recommendedCourses = courses;
         this.isLoadingCourses = false;
+        this.cdr.markForCheck();
       },
       error: (err: any) => {
         console.error('Failed to load courses', err);
         this.isLoadingCourses = false;
+        this.cdr.markForCheck();
       }
     });
 
@@ -75,10 +84,13 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
           this.courseProgress = 30 + (numCourses * 10);
           if (this.courseProgress > 95) this.courseProgress = 95;
         }
+        
+        this.cdr.markForCheck();
       },
       error: (err: any) => {
         console.error('Failed to load enrollments', err);
         this.isLoadingEnrollments = false;
+        this.cdr.markForCheck();
       }
     });
 
@@ -86,10 +98,12 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.leaderboard = data;
         this.isLoadingLeaderboard = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load leaderboard', err);
         this.isLoadingLeaderboard = false;
+        this.cdr.markForCheck();
       }
     });
   }

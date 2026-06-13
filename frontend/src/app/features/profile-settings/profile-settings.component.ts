@@ -1,7 +1,9 @@
-import { Component, OnInit, ElementRef, viewChild, AfterViewInit, signal, computed, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, ElementRef, viewChild, AfterViewInit, signal, computed, Inject, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../core/services/user.service';
+import { AuthService } from '../../core/services/auth.service';
+import { AuthStore } from '../../core/store/auth.store';
 import { UserProfile } from '../../core/models/user.model';
 import { gsap } from 'gsap';
 
@@ -28,6 +30,9 @@ export class ProfileSettingsComponent implements OnInit, AfterViewInit {
   isLoading = signal(true);
   isSaving = signal(false);
   successText = signal('');
+
+  private authService = inject(AuthService);
+  private authStore = inject(AuthStore);
 
   constructor(
     private userService: UserService,
@@ -81,6 +86,20 @@ export class ProfileSettingsComponent implements OnInit, AfterViewInit {
       next: (res) => {
         this.isSaving.set(false);
         this.showSuccess(res.message);
+
+        // Update AuthStore so the header reacts instantly
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          const updatedUser = {
+            ...currentUser,
+            firstName: this.firstName(),
+            lastName: this.lastName()
+          };
+          this.authStore.setUser(updatedUser);
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+          }
+        }
       },
       error: (err) => {
         console.error('Failed to update profile', err);

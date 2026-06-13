@@ -30,7 +30,7 @@ Open a terminal in the `backend` folder and run:
 cd backend
 ./mvnw spring-boot:run
 ```
-*(The backend runs on `http://localhost:8080`. It uses a file-based H2 database under `backend/data`, so no external database setup is required.)*
+*(The backend runs on `http://localhost:8080`. It connects to a PostgreSQL database on `localhost:5432/project_L_Plateform`, and the frontend communicates with the backend via `http://localhost:8080/api`.)*
 
 #### Step 2: Start the Frontend (Angular 21 Zoneless with GSAP)
 Open a new terminal in the `frontend` folder and run:
@@ -50,6 +50,7 @@ npm start
 - **Styling:** Migrated styling system to **Tailwind CSS v4**.
 - **WebRTC:** Integrated ZegoCloud for virtual tutoring rooms.
 - **Animations:** Fully integrated **GSAP** into all new frontend components for premium UI/UX.
+- **API Port Fix:** Corrected frontend API calls to connect to port **8080** instead of 8081.
 
 ---
 
@@ -67,12 +68,13 @@ export OPENAI_API_KEY="your-api-key"
 ---
 
 ### 🔑 Default Test Accounts
-When the backend starts, it automatically seeds the local H2 database with the following test accounts:
+When the backend starts and the `seed_database.js` script is run, it seeds the database with the following test accounts:
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| **Student** | `omar.student@fahmak.com` | `password123` |
-| **Instructor** | `ahmed.instructor@fahmak.com` | `password123` |
+| **Instructor 1** | `ahmed@fahmak.com` | `Password@123` |
+| **Instructor 2** | `sara@fahmak.com` | `Password@123` |
+| **Student** | `youssef@fahmak.com` | `Password@123` |
 | **Admin** | `admin@fahmak.com` | `password123` |
 
 ---

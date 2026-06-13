@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ElementRef, viewChild, effect } from '@angular/core';
-
+import { Component, OnInit, OnDestroy, ElementRef, viewChild, effect, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { Subscription } from 'rxjs';
@@ -27,10 +27,11 @@ export class VirtualClassroomComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     effect(() => {
-      if (this.zegoContainer()) {
+      if (isPlatformBrowser(this.platformId) && this.zegoContainer()) {
         this.joinRoom();
       }
     });

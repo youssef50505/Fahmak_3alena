@@ -62,6 +62,37 @@ import { GamificationProfile } from '../../core/models/gamification.model';
               }
             </div>
           }
+
+          <div class="mt-12 animate-fade-in">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">Brain Training (ألعاب التفكير)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <!-- Sudoku Game API -->
+              <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <h4 class="font-bold text-gray-900 mb-2">Sudoku Challenge</h4>
+                <p class="text-sm text-gray-500 mb-6">Complete the numbers in rows and columns. Powered by WebSudoku API.</p>
+                <div class="w-full flex justify-center bg-gray-50 py-4 rounded-lg border border-gray-200 overflow-hidden">
+                  <iframe src="https://widget.websudoku.com/?level=2" width="250" height="260" scrolling="no" frameborder="0" title="Sudoku Logic Game"></iframe>
+                </div>
+              </div>
+
+              <!-- Jigsaw / Logic Puzzle API -->
+              <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+                </div>
+                <h4 class="font-bold text-gray-900 mb-2">Logic Puzzle</h4>
+                <p class="text-sm text-gray-500 mb-6">Test your mental strength with an alternative puzzle challenge.</p>
+                <div class="w-full flex justify-center bg-gray-50 py-4 rounded-lg border border-gray-200 overflow-hidden">
+                   <iframe src="https://123sudoku.co.uk/sudokulib/generate.php?size=small" width="200" height="245" frameborder="0" scrolling="no" title="Alternative Logic Puzzle"></iframe>
+                </div>
+              </div>
+
+            </div>
+          </div>
         }
       </div>
     </div>

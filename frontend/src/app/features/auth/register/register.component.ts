@@ -24,12 +24,15 @@ export class RegisterComponent implements AfterViewInit {
   isLoading = signal(false);
   activeModule = signal<'STUDENT' | 'INSTRUCTOR'>('STUDENT');
 
+  // Matches backend requirements: at least one digit, one lowercase, one uppercase, one special character, min 8 chars
+  passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!_]).{8,}$/;
+
   isFormValid = computed(() => {
     return this.firstName().length > 0 &&
            this.lastName().length > 0 &&
            this.email().includes('@') &&
            this.email().length > 3 &&
-           this.password().length >= 8 &&
+           this.passwordRegex.test(this.password()) &&
            this.agreeTerms();
   });
 

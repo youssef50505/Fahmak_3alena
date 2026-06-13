@@ -1,5 +1,5 @@
-import { Component, OnInit, ElementRef, viewChild, AfterViewInit, signal, computed } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Component, OnInit, ElementRef, viewChild, AfterViewInit, signal, computed, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, CurrencyPipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CourseService } from '../../core/services/course.service';
 import { Course, CourseRequest } from '../../core/models/course.model';
@@ -40,7 +40,10 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
   categories = ['Programming', 'Design', 'Business', 'Marketing', 'Data Science', 'Other'];
   difficulties = ['Beginner', 'Intermediate', 'Advanced'];
 
-  constructor(private courseService: CourseService) {}
+  constructor(
+    private courseService: CourseService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
     this.loadCourses();
@@ -53,8 +56,6 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
   loadCourses(): void {
     this.courseService.getAllCourses().subscribe({
       next: (data) => {
-        // Instructor should only see their own, but since we use getAllCourses and don't have instructor id readily available,
-        // we'll just display them. In a real app, we'd filter by instructor.
         this.courses = data;
         this.isLoading = false;
         this.animateGrid();
@@ -67,17 +68,19 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
   }
 
   animateGrid(): void {
-    setTimeout(() => {
-      if (this.coursesGrid()) {
-        gsap.from(this.coursesGrid()!.nativeElement.children, {
-          y: 40,
-          opacity: 0,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: 'power2.out'
-        });
-      }
-    }, 50);
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        if (this.coursesGrid()) {
+          gsap.from(this.coursesGrid()!.nativeElement.children, {
+            y: 40,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: 'power2.out'
+          });
+        }
+      }, 50);
+    }
   }
 
   openCreateModal(): void {
@@ -102,23 +105,29 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
 
   showModal(): void {
     this.isModalOpen = true;
-    setTimeout(() => {
-      gsap.to(this.modalOverlay()!.nativeElement, { opacity: 1, duration: 0.3 });
-      gsap.fromTo(this.modalContent()!.nativeElement,
-        { y: -50, opacity: 0, scale: 0.95 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }
-      );
-    }, 10);
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        gsap.to(this.modalOverlay()!.nativeElement, { opacity: 1, duration: 0.3 });
+        gsap.fromTo(this.modalContent()!.nativeElement,
+          { y: -50, opacity: 0, scale: 0.95 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }
+        );
+      }, 10);
+    }
   }
 
   closeModal(): void {
-    gsap.to(this.modalOverlay()!.nativeElement, { opacity: 0, duration: 0.3 });
-    gsap.to(this.modalContent()!.nativeElement, {
-      y: 30, opacity: 0, scale: 0.95, duration: 0.3, ease: 'power2.in',
-      onComplete: () => {
-        this.isModalOpen = false;
-      }
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      gsap.to(this.modalOverlay()!.nativeElement, { opacity: 0, duration: 0.3 });
+      gsap.to(this.modalContent()!.nativeElement, {
+        y: 30, opacity: 0, scale: 0.95, duration: 0.3, ease: 'power2.in',
+        onComplete: () => {
+          this.isModalOpen = false;
+        }
+      });
+    } else {
+      this.isModalOpen = false;
+    }
   }
 
   onSubmit(): void {
@@ -164,23 +173,32 @@ export class CourseManagementComponent implements OnInit, AfterViewInit {
 
   deleteCourse(id: number, index: number, cardElement: HTMLElement): void {
     if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
-      gsap.to(cardElement, {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.3,
-        onComplete: () => {
-          this.courseService.deleteCourse(id).subscribe({
-            next: () => {
-              this.courses.splice(index, 1);
-            },
-            error: (err) => {
-              console.error('Failed to delete', err);
-              // Revert animation if failed
-              gsap.to(cardElement, { scale: 1, opacity: 1, duration: 0.3 });
-            }
-          });
-        }
-      });
+      if (isPlatformBrowser(this.platformId)) {
+        gsap.to(cardElement, {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.3,
+          onComplete: () => {
+            this.executeDelete(id, index, cardElement);
+          }
+        });
+      } else {
+        this.executeDelete(id, index, cardElement);
+      }
     }
+  }
+
+  private executeDelete(id: number, index: number, cardElement: HTMLElement): void {
+    this.courseService.deleteCourse(id).subscribe({
+      next: () => {
+        this.courses.splice(index, 1);
+      },
+      error: (err) => {
+        console.error('Failed to delete', err);
+        if (isPlatformBrowser(this.platformId)) {
+          gsap.to(cardElement, { scale: 1, opacity: 1, duration: 0.3 });
+        }
+      }
+    });
   }
 }

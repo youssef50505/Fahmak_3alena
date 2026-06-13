@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { GamificationService } from '../../core/services/gamification.service';
 import { GamificationProfile } from '../../core/models/gamification.model';
@@ -9,7 +10,7 @@ import { Notification } from '../../core/models/notification.model';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })

@@ -1,5 +1,5 @@
-import { Component, OnInit, ElementRef, viewChild, AfterViewInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit, ElementRef, viewChild, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { InstructorService } from '../../core/services/instructor.service';
 import { IntegrityReportResponse } from '../../core/models/instructor.model';
 import { gsap } from 'gsap';
@@ -18,14 +18,17 @@ export class InstructorIntegrityComponent implements OnInit, AfterViewInit {
   flaggedSessions: IntegrityReportResponse[] = [];
   isLoading = true;
 
-  constructor(private instructorService: InstructorService) {}
+  constructor(
+    private instructorService: InstructorService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
     this.loadFlaggedSessions();
   }
 
   ngAfterViewInit(): void {
-    if (this.pageHeader()) {
+    if (isPlatformBrowser(this.platformId) && this.pageHeader()) {
       gsap.from(this.pageHeader()!.nativeElement, {
         y: -30,
         opacity: 0,
@@ -50,6 +53,7 @@ export class InstructorIntegrityComponent implements OnInit, AfterViewInit {
   }
 
   animateReports(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     setTimeout(() => {
       if (this.reportsContainer()) {
         gsap.from(this.reportsContainer()!.nativeElement.children, {

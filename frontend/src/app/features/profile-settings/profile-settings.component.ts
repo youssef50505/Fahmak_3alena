@@ -1,5 +1,5 @@
-import { Component, OnInit, ElementRef, viewChild, AfterViewInit, signal, computed } from '@angular/core';
-
+import { Component, OnInit, ElementRef, viewChild, AfterViewInit, signal, computed, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../core/services/user.service';
 import { UserProfile } from '../../core/models/user.model';
@@ -29,20 +29,25 @@ export class ProfileSettingsComponent implements OnInit, AfterViewInit {
   isSaving = signal(false);
   successText = signal('');
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
     this.loadProfile();
   }
 
   ngAfterViewInit(): void {
-    gsap.from(this.profileContainer().nativeElement.children, {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: 'power3.out'
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      gsap.from(this.profileContainer().nativeElement.children, {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'power3.out'
+      });
+    }
   }
 
   loadProfile(): void {
@@ -86,25 +91,30 @@ export class ProfileSettingsComponent implements OnInit, AfterViewInit {
 
   private showSuccess(message: string): void {
     this.successText.set(message);
-    // Ensure view child is updated
-    setTimeout(() => {
-      if (this.successMessage()) {
-        gsap.fromTo(this.successMessage()!.nativeElement, 
-          { opacity: 0, y: -20 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }
-        );
-        
-        setTimeout(() => {
-          gsap.to(this.successMessage()!.nativeElement, {
-            opacity: 0,
-            y: -20,
-            duration: 0.5,
-            onComplete: () => {
-              this.successText.set('');
-            }
-          });
-        }, 3000);
-      }
-    }, 0);
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        if (this.successMessage()) {
+          gsap.fromTo(this.successMessage()!.nativeElement, 
+            { opacity: 0, y: -20 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }
+          );
+          
+          setTimeout(() => {
+            gsap.to(this.successMessage()!.nativeElement, {
+              opacity: 0,
+              y: -20,
+              duration: 0.5,
+              onComplete: () => {
+                this.successText.set('');
+              }
+            });
+          }, 3000);
+        }
+      }, 0);
+    } else {
+      setTimeout(() => {
+        this.successText.set('');
+      }, 3000);
+    }
   }
 }

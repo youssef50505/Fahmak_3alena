@@ -30,3 +30,12 @@ body.reduced-motion * {
 body.color-blind-filter {
   filter: contrast(1.2) saturate(1.5) sepia(0.3) hue-rotate(-10deg) !important;
 }
+
+/* Hide scrollbar for UI elements that should scroll silently */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
